@@ -4,7 +4,7 @@
 - **Əlaqəli tapşırıq:** TASK-UI-001
 - **Tarix:** 2026-10-31
 - **Müəllif:** Watson (Docs)
-- **Mərhələ:** Audit və plan; frontend kodu dəyişdirilmir
+- **Mərhələ:** Araşdırma tamamlanıb; yeni diaqnostika promptunun icazəsi ilə implementasiya başlanıb
 
 ## Sual
 
@@ -66,9 +66,9 @@ Cədvəldəki vizual istiqamətlər komandanın tövsiyəsidir; məhsulların ö
 
 ## Nəticə / Tövsiyə
 
-İstifadəçinin son göstərişinə uyğun Matchday futbol konsepti, tünd yaşıl səthlər, scoreboard, qol sayı və qısa celebration saxlanır. Əvvəlki slate/mavi istiqamət qəbul edilməyib və qüvvədən düşüb. UI kitabxanası olmadığı üçün Tailwind CSS + seçilmiş shadcn/ui komponentləri + Motion + lucide-react təklif edilir. Bu, hələ qəbul edilmiş qərar deyil. Paketlərin konkret versiyaları tətbiq mərhələsində mövcud React/Vite/Node və lockfile ilə yoxlanacaq. Əlavə animasiya kitabxanası, router və form/state kitabxanası bu audit əsasında tələb olunmur.
+İstifadəçinin son göstərişinə uyğun Matchday futbol konsepti, tünd yaşıl səthlər, scoreboard, qol sayı və qısa celebration saxlanır. Əvvəlki slate/mavi istiqamət qəbul edilməyib və qüvvədən düşüb. UI kitabxanası olmadığı üçün Tailwind CSS + seçilmiş shadcn/ui komponentləri + Motion + lucide-react təklif edilir. Bu istiqamət son diaqnostika/düzəliş promptunun şərti icazəsi əsasında ADR 0002-də qəbul edilib; kodun əvvəllər yazılmadığı ayrıca təsdiqlənib. Paketlərin konkret versiyaları tətbiq mərhələsində mövcud React/Vite/Node və lockfile ilə yoxlanacaq. Əlavə animasiya kitabxanası, router və form/state kitabxanası bu audit əsasında tələb olunmur.
 
-Əlaqəli cari qərar təklifi: [0002 — Matchday futbol dizayn sistemi](../decisions/0002-matchday-football-design-system.md). Tarixi, qəbul edilməmiş [0001 təklifi](../decisions/0001-frontend-design-system.md) yeni istifadəçi tələbi ilə əvəz olunub. Audit və qəbul meyarları: [TASK-UI-001](../tasks/TASK-UI-001-frontend-redesign.md).
+Əlaqəli cari qəbul edilmiş qərar: [0002 — Matchday futbol dizayn sistemi](../decisions/0002-matchday-football-design-system.md). Tarixi, qəbul edilməmiş [0001 təklifi](../decisions/0001-frontend-design-system.md) yeni istifadəçi tələbi ilə əvəz olunub. Audit və qəbul meyarları: [TASK-UI-001](../tasks/TASK-UI-001-frontend-redesign.md).
 
 
 ## Son prompt üzrə dəqiqləşdirmələr
@@ -83,6 +83,6 @@ Motion `layoutId` ortaq indicator keçidi üçün nəzərdə tutulub. Bu tətbiq
 
 Tailwind/shadcn semantic tema dəyişənləri mövcud yaşıl tokenləri vahid background/foreground/primary/input/ring kimi xəritələməyə uyğundur; ümumi `transition: all` istifadə etmək tələb deyil. [Tailwind theme](https://tailwindcss.com/docs/theme), [shadcn theming](https://ui.shadcn.com/docs/theming).
 
-Soprano bu mərhələdə repodakı tarixi login/dashboard şəkillərini yoxlayıb. Son promptla yeni image attachment gəlməyib; istifadəçinin yazılı screenshot düzəlişləri agentin yeni screenshot görməsi kimi təqdim edilmir. Protected dashboard canlı login ilə yoxlanmayıb. Bütün tətbiq detalları istifadəçi təsdiqini gözləyən təklifdir.
+Soprano bu mərhələdə repodakı tarixi login/dashboard şəkillərini yoxlayıb. Son promptla yeni image attachment gəlməyib; istifadəçinin yazılı screenshot düzəlişləri agentin yeni screenshot görməsi kimi təqdim edilmir. Protected dashboard canlı login ilə yoxlanmayıb. Sonrakı istifadəçi promptu kod yoxdursa tətbiq etməyə icazə verib; diaqnostika bu şərti təsdiqləyib. Cari tətbiq və yoxlama vəziyyəti [6 bəndli diaqnostika qeydlərində](frontend-redesign-not-visible.md) izlənir.
 
 İmza: **Watson**

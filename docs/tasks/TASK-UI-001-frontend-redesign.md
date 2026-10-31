@@ -1,18 +1,18 @@
 # TASK-UI-001: Matchday frontend dizaynının yenilənməsi
 
 - **Status:** İcrada
-- **Mərhələ:** Addım 1 — yenilənmiş audit və plan; tətbiq üçün istifadəçi təsdiqi gözlənilir
+- **Mərhələ:** Diaqnostika tamamlanıb; yeni promptun şərtli icazəsi ilə Jane implementasiyaya başlayıb
 - **Tarix:** 2026-10-31
 - **Məsul agentlər:** Soprano (Team Lead), Jane (Frontend), Watson (Docs)
-- **Branch-lər:** `feature/TASK-UI-001-frontend-redesign`, `docs/TASK-UI-001-frontend-redesign`
+- **Branch-lər:** `feature/TASK-UI-001-frontend-redesign`, `feature/TASK-UI-001-lead-review`, `docs/TASK-UI-001-frontend-redesign`
 - **Branch bazası:** `origin/main` — `4608d6e`; lokal `main` branch-i mövcud deyil
 - **Audit baseline-ı:** `feature/TASK-AUTH-lead-review` — `0ceb86b`
-- **PR-lər:** Açılmayıb; tətbiq və final review mərhələsi başlamayıb
+- **PR-lər:** Açılmayıb; istifadəçinin bu mərhələ üçün no-push tələbi saxlanır, final review hələ tamamlanmayıb
 - **Sənədləşdirən:** Watson
 
 ## Təsvir və son istiqamət
 
-İstifadəçi mövcud görünüşün keyfiyyətini yüksəltmək istəyir, amma Matchday-in futbol konsepti **saxlanmalıdır**: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayı və qısa tamamlama effekti. Əvvəlki slate/mavi workspace təklifi qəbul edilməyib və [0002 futbol dizayn sistemi təklifi](../decisions/0002-matchday-football-design-system.md) ilə əvəz olunur. Yeni prompt tətbiq icazəsi deyil: Addım 1-də yalnız audit/plan/sənəd, Addım 2-də ayrıca təsdiqdən sonra kod.
+İstifadəçi mövcud görünüşün keyfiyyətini yüksəltmək istəyir, amma Matchday-in futbol konsepti **saxlanmalıdır**: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayı və qısa tamamlama effekti. Əvvəlki slate/mavi workspace təklifi qəbul edilməyib və [0002 futbol dizayn sistemi təklifi](../decisions/0002-matchday-football-design-system.md) ilə əvəz olunur. Əvvəlki mərhələdə yalnız audit/plan icazəsi var idi. Son diaqnostika/düzəliş promptu kod yoxdursa implementasiya etməyə açıq icazə verir. Soprano mənbə kodunun yazılmadığını təsdiqlədiyi üçün Jane tətbiqə başlayıb; əlavə təsdiq gözlənilmir.
 
 Soprano işi Jane-ə həvalə edib; Watson yalnız `docs/` yazır. Kökdə `agents.md` qayda faylı Windows-da `AGENTS.md` yolu ilə oxunub; istifadəçinin faylı dəyişdirilməyib. Rocky üçün backend işi yoxdur.
 
@@ -48,9 +48,9 @@ To-Do yaratma, redaktə, tamamlama/aktiv etmə, silmə təsdiqi, filtr, aktiv/ta
 
 Mövcud yaxşı əsaslar qorunur: 44px idarələr, focus-visible, native dialog-un klaviatura/Escape davranışı, reduced-motion media qaydası, API qatının ayrılması və strict TypeScript.
 
-## Təsdiqdən sonra icra ardıcıllığı
+## İcazələndirilmiş icra ardıcıllığı
 
-1. Hazır auth dəyişikliklərinin `main`-ə inteqrasiyası həll olunur, Jane-in mövcud branch-i həmin baseline üzərinə yenilənir. Backend commitləri redesign adı ilə daşınmır.
+1. Jane-in branch-i origin/main əsasında saxlanır və əvvəl yalnız frontend auth commit-i `7184bff` tətbiq olunur (Jane branch-ində `ac85554`). Soprano-nun `feature/TASK-UI-001-lead-review` branch-i tam mövcud auth baseline-ını saxlayır. Yalnız yeni frontend implementasiya commitləri bu review branch-inə keçiriləcək; backend commitləri redesign adı ilə daşınmır.
 2. Tailwind + Vite setup, semantic tokenlər, seçilmiş shadcn/ui primitivləri, `motion/react` və named `lucide-react` ikonları; paket/lockfile dəyişikliyi Team Lead review-dan keçir.
 3. Button/Input/Label/FormField, PasswordField, AuthShell, StatusPanel, Skeleton, avatar DropdownMenu, AlertDialog, filtr indicator və statik PitchDecoration hazırlanır.
 4. Login, Register, Forgot/Reset və dashboard yeni primitivlərə keçirilir; scoreboard və həftəlik hədəf saxlanır.
@@ -65,7 +65,7 @@ Mövcud yaxşı əsaslar qorunur: 44px idarələr, focus-visible, native dialog-
 - [x] Komponentlər, stillər, paketlər və TypeScript strict audit edilib.
 - [x] İstifadəçinin futbol konseptini saxlamaq tələbi slate/mavi təklifi əvəz edib.
 - [x] Araşdırma, yeni qərar təklifi və docs indeksi yenilənib.
-- [ ] İstifadəçi yeni dizayn/stack təklifini təsdiqləyib; bundan əvvəl kod/paket dəyişikliyi yoxdur.
+- [x] Yeni prompt kod yoxdursa implementasiya etməyi icazələndirib; kodun yazılmadığı təsdiqlənib, Jane tətbiqə başlayıb.
 
 ### Login və auth səhifələri
 
@@ -118,14 +118,18 @@ Mövcud yaxşı əsaslar qorunur: 44px idarələr, focus-visible, native dialog-
 
 ## Asılılıqlar və sənəd uyğunsuzluqları
 
-Audit baseline-ı `origin/main`-dən 7 commit irəlidədir; Forgot/Reset və auth testləri itirilməməlidir. Bu asılılıq tətbiqdən əvvəl həll ediləcək. Qayda faylının standart qovluq/runner nümunəsi faktiki `src/TodoApi`, `src/api`, Node/jsdom ilə fərqlənir; bu redesign üçün böyük struktur refaktorinqi planlaşdırılmır.
+Audit baseline-ı `origin/main`-dən 7 commit irəlidədir; Forgot/Reset və auth testləri itirilməməlidir. Asılılıq frontend auth commitinin Jane branch-inə ayrıca keçirilməsi və Soprano review branch-ində tam auth baseline-ının saxlanması ilə idarə olunur. Qayda faylının standart qovluq/runner nümunəsi faktiki `src/TodoApi`, `src/api`, Node/jsdom ilə fərqlənir; bu redesign üçün böyük struktur refaktorinqi planlaşdırılmır.
 
 Köhnə docs/01, docs/02 və docs/03-də localStorage, revocation olmaması, test/rate limit planları kimi tarixlə əlaqəli auth qeydləri var. Cari auth review sənədi docs/06-authentication.md-dir. Ziddiyyət Soprano-ya bildirilib, tarixi qəbul edilmiş qərarlar səssiz dəyişdirilməyib.
+
+## Diaqnostika və tətbiq qeydi
+
+İstifadəçinin tələb etdiyi 6 bənd üzrə faktlar [redesign görünmür diaqnostikasında](../research/frontend-redesign-not-visible.md) qeyd olunub. İlkin səbəb cache deyil: əvvəlki mərhələlərdə yalnız docs yazılmışdı, frontend redesign mənbə kodu/dependency inteqrasiyası edilməmişdi. Hard refresh mövcud olmayan kodu göstərə bilməz.
 
 ## Yoxlamalar və nəticə
 
 Bu yenilənmiş audit mərhələsində Soprano cari frontend baseline-ında `npm run lint` — exit 0, `npm run build` — exit 0 (TypeScript strict + Vite 7.3.7), `npm test` — 12/12, exit 0 nəticələrini yenidən təsdiqləyib. Bunlar redesign sonrası nəticə deyil. Repodakı tarixi login/dashboard screenshot-ları bu mərhələdə Soprano tərəfindən vizual yoxlanıb; yeni attachment kimi təqdim edilmir. Kod/dependency dəyişdirilməyib.
 
-Tapşırıq “Tamamlandı” deyil. Yalnız Addım 1 yenilənib, istifadəçi təsdiqi gözlənilir.
+Tapşırıq “Tamamlandı” deyil. Yeni prompt əsasında real implementasiya başlanıb; test, vizual yoxlama, root/frontend inteqrasiyası və sənədləşdirilmiş nəticələr gözlənilir. PR/no-push vəziyyəti ayrıca göstərilir.
 
 İmza: **Watson**

@@ -7,13 +7,15 @@
 
 | Tapşırıq | Status | Mərhələ |
 |---|---|---|
-| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Futbol konsepti saxlanılan yenilənmiş audit və plan; təsdiq gözlənilir |
+| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Diaqnostika bitib; yeni promptun icazəsi ilə real implementasiya davam edir |
 
 ## Qərarlar və araşdırmalar
 
-- [0002 — Matchday futbol dizayn sistemi](decisions/0002-matchday-football-design-system.md) — **Təklif**, tətbiq üçün istifadəçi təsdiqi gözlənilir.
+- [0002 — Matchday futbol dizayn sistemi](decisions/0002-matchday-football-design-system.md) — **Qəbul edildi**, kod yoxdursa tətbiq et göstərişinin şərti təsdiqlənib.
 - [0001 — Əvvəlki slate/mavi təklif](decisions/0001-frontend-design-system.md) — **Əvəz olunub**, heç vaxt qəbul edilməyib.
 - [Frontend redesign araşdırması](research/frontend-redesign.md) — mövcud stack, futbol konseptinin saxlanması, font subset riski, Lucide/Motion rəsmi mənbələri və uyğunluq.
+
+- [Redesign görünmür — 6 bəndli diaqnostika](research/frontend-redesign-not-visible.md) — ilkin səbəb və icazələndirilmiş düzəlişin gedişi.
 
 ## Mövcud təlimatlar
 

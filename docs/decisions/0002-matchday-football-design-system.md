@@ -1,22 +1,22 @@
 # 0002: Matchday futbol dizayn sistemi və UI düzəlişləri
 
-- **Status:** Təklif
+- **Status:** Qəbul edildi
 - **Tarix:** 2026-10-31
 - **Əlaqəli tapşırıq:** TASK-UI-001
 - **Təklif edən:** Jane (Frontend), Soprano (Team Lead)
 - **Sənədləşdirən:** Watson (Docs)
 - **Əvəz etdiyi:** [0001 — qəbul edilməmiş slate/mavi təklif](0001-frontend-design-system.md)
-- **Təsdiq:** İstifadəçinin təsdiqi gözlənilir; implementasiya icazəsi verilməyib
+- **Təsdiq:** İstifadəçinin 2026-10-31 tarixli yeni diaqnostika/düzəliş promptu “redesign kodu yoxdursa implementasiya et” şərti ilə tətbiqi açıq icazələndirib. Diaqnostika kodun yazılmadığını təsdiqləyib; Soprano Jane-ə implementasiyanı tapşırıb.
 
 ## Kontekst
 
-İstifadəçinin yeni göstərişi Matchday futbol konseptini saxlamaqdır: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayları, zəif meydan xətləri və qısa tamamlama effekti. Məqsəd konsepti dəyişmək deyil, login və dashboard-un ölçü, hizalama, tipoqrafiya və interaksiya keyfiyyətini yüksəltməkdir. Backend/API/auth/route funksionallığı qorunur. 0001 təklifi heç vaxt qəbul edilməyib; yalnız bu yeni təklif təsdiqə təqdim olunur.
+İstifadəçinin yeni göstərişi Matchday futbol konseptini saxlamaqdır: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayları, zəif meydan xətləri və qısa tamamlama effekti. Məqsəd konsepti dəyişmək deyil, login və dashboard-un ölçü, hizalama, tipoqrafiya və interaksiya keyfiyyətini yüksəltməkdir. Backend/API/auth/route funksionallığı qorunur. 0001 təklifi heç vaxt qəbul edilməyib; bu futbol istiqaməti yeni şərtli icazə əsasında tətbiq üçün qəbul olunur.
 
-## Qərar təklifi
+## Qərar
 
 ### Texniki baza və sərhəd
 
-Mövcud React 19 + TypeScript strict + Vite layihəsinə Tailwind CSS, seçilmiş shadcn/ui komponentləri, `motion` (`motion/react`) və `lucide-react` təklif olunur. İkonlar named import ilə alınır; ikinci ikon kitabxanası və ayrıca tween/counter paketi əlavə edilmir. shadcn primitivləri üçün cari Base UI/Radix variantının uyğunluğu tətbiqdən əvvəl yoxlanır, köhnə təlimat avtomatik seçilmir. Yeni framework, router, form/state kitabxanası və premium animasiya bloku tələb olunmur. Paketlər bu mərhələdə quraşdırılmayıb.
+Mövcud React 19 + TypeScript strict + Vite layihəsinə Tailwind CSS, seçilmiş shadcn/ui komponentləri, `motion` (`motion/react`) və `lucide-react` təklif olunur. İkonlar named import ilə alınır; ikinci ikon kitabxanası və ayrıca tween/counter paketi əlavə edilmir. shadcn primitivləri üçün cari Base UI/Radix variantının uyğunluğu tətbiqdən əvvəl yoxlanır, köhnə təlimat avtomatik seçilmir. Yeni framework, router, form/state kitabxanası və premium animasiya bloku tələb olunmur. Qəbul anında redesign paketləri quraşdırılmayıb; Jane tətbiq mərhələsində paket/lockfile və uyğunluğu yoxlayacaq.
 
 ### Semantic tokenlər
 
@@ -89,7 +89,7 @@ Bütün motion 150–300ms, `cubic-bezier(.16,1,.3,1)` ease-out, yalnız transfo
 
 ## Nəticələr və yoxlama
 
-Təsdiqdən sonra əvvəl token/primitivlər, sonra AuthShell/form vəziyyətləri, header/menu, scoreboard/progress, filter/list/add/empty, ən sonda motion və regression/visual QA hazırlanır. Risklər Tailwind Preflight toqquşması, fontface subset sıralaması, React 19 peer uyğunluğu, menu/dialog focus və pending auth baseline-ıdır. Hədəf browser, mobil viewport, 200% zoom, AA kontrast və Azərbaycan glyph-ləri yoxlanacaq. `npm run lint`, `npm run build`, `npm test`, PR və Soprano review olmadan “Bitdi” deyil.
+İstifadəçinin yeni icazəsi əsasında əvvəl token/primitivlər, sonra AuthShell/form vəziyyətləri, header/menu, scoreboard/progress, filter/list/add/empty, ən sonda motion və regression/visual QA hazırlanır. Risklər Tailwind Preflight toqquşması, fontface subset sıralaması, React 19 peer uyğunluğu, menu/dialog focus və pending auth baseline-ıdır. Hədəf browser, mobil viewport, 200% zoom, AA kontrast və Azərbaycan glyph-ləri yoxlanacaq. `npm run lint`, `npm run build`, `npm test`, PR və Soprano review olmadan “Bitdi” deyil.
 
 Əlaqəli sənədlər: [araşdırma və rəsmi mənbələr](../research/frontend-redesign.md), [tam qəbul meyarları](../tasks/TASK-UI-001-frontend-redesign.md).
 
