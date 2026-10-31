@@ -426,3 +426,29 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# Matchday layihəsinə aid əlavə qaydalar
+# .NET və redaktor çıxışları mənbə koduna daxil deyil.
+**/bin/
+**/obj/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+# Node paketləri və build çıxışları yenidən yaradılır.
+**/node_modules/
+**/dist/
+# Yerli ayarlar və məlumatlar paylaşılmır.
+.env
+.env.*
+!.env.example
+**/todo.db*
+*.mdf
+*.ldf
+*.bak
+appsettings.Local.json
+*.log
+.DS_Store
+# Müvəqqəti yoxlama vasitələri repozitoriyaya daxil edilmir.
+.qa/

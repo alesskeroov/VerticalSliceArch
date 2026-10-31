@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:5000
+@todoId = 00000000-0000-0000-0000-000000000000
+
+### Yeni tapşırıq yarat, cavabdakı id-ni yuxarıya köçür.
+POST {{baseUrl}}/api/todos
+Content-Type: application/json
+
+{"title":"Vertical Slice öyrən"}
+
+### Filtr: all, active və ya completed.
+GET {{baseUrl}}/api/todos?filter=all
+
+### Başlığı dəyiş.
+PUT {{baseUrl}}/api/todos/{{todoId}}
+Content-Type: application/json
+
+{"title":"Hangfire öyrən"}
+
+### Tamamla və ya aktiv et.
+PATCH {{baseUrl}}/api/todos/{{todoId}}/toggle
+
+### Tapşırığı sil.
+DELETE {{baseUrl}}/api/todos/{{todoId}}
+
+### Boş başlıq üçün 400 gözlənilir.
+POST {{baseUrl}}/api/todos
+Content-Type: application/json
+
+{"title":""}

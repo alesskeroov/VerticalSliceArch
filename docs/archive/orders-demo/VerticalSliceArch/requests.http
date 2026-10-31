@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:5000
+
+### Sifariş yarat; email job-u növbəyə qoyulur.
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "email": "leyla@example.com",
+  "productName": "Kitab"
+}
+
+### Bütün sifarişləri oxu.
+GET {{baseUrl}}/orders
+
+### Boş məlumat üçün 400 cavabını yoxla.
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+  "email": "",
+  "productName": "Kitab"
+}

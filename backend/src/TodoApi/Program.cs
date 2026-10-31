@@ -1,0 +1,57 @@
+using Hangfire;
+using Hangfire.InMemory;
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Common;
+using TodoApi.Composition;
+using TodoApi.Features.Todos.CreateTodo;
+using TodoApi.Features.Todos.DeleteTodo;
+using TodoApi.Features.Todos.GetTodos;
+using TodoApi.Features.Todos.ToggleTodo;
+using TodoApi.Features.Todos.UpdateTodo;
+using TodoApi.Features.Jobs.CleanupCompletedTodos;
+using TodoApi.Features.Jobs.TodoCreatedNotification;
+
+var builder = WebApplication.CreateBuilder(args);
+// Windows Authentication istifadə olunur; kodda parol saxlanmır.
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("TodoDatabase")));
+// Handler qeydiyyatları Composition qovluğunda açıq şəkildə saxlanır.
+builder.Services.AddTodoFeatures();
+builder.Services.AddHangfire(config => config.UseInMemoryStorage());
+builder.Services.AddHangfireServer();
+// Origin ayardan gəlir; yalnız frontend ünvanına icazə verilir.
+var frontendOrigin = builder.Configuration["FrontendOrigin"]
+    ?? throw new InvalidOperationException("FrontendOrigin ayarı tapılmadı.");
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+    policy.WithOrigins(frontendOrigin).AllowAnyHeader().AllowAnyMethod()));
+builder.Services.AddEndpointsApiExplorer();
+// Feature-lərdə Request adı təkrarlandığı üçün Swagger tam tip adını istifadə edir.
+builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(
+    type => (type.FullName ?? type.Name).Replace("+", ".")));
+var app = builder.Build();
+// Code First migration-ları ilk açılışda bazanı və cədvəlləri yaradır.
+// Demo üçün avtomatikdir; real yayımlamada ayrıca yerləşdirmə addımı seçilə bilər.
+using (var scope = app.Services.CreateScope())
+{
+    var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await database.Database.MigrateAsync();
+}
+app.UseCors();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseHangfireDashboard("/hangfire");
+}
+GetTodos.MapEndpoint(app);
+CreateTodo.MapEndpoint(app);
+UpdateTodo.MapEndpoint(app);
+ToggleTodo.MapEndpoint(app);
+DeleteTodo.MapEndpoint(app);
+TodoCreatedNotification.MapEndpoint(app);
+CleanupCompletedTodos.MapEndpoint(app);
+// Eyni ID-li plan yenilənir; hər açılışda dublikat plan yaranmır.
+app.Services.GetRequiredService<IRecurringJobManager>()
+    .AddOrUpdate<CleanupCompletedTodos.Handler>("cleanup-completed-todos",
+        handler => handler.Handle(), Cron.Hourly());
+app.Run();

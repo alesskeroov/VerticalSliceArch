@@ -1,0 +1,38 @@
+/* Futbol paleti və ölçülər komponentlərdən ayrıdır; dark rejim eyni adları yeniləyir. */
+:root {
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-synthesis: none;
+  --score-font: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --bg: #F3F6F2; --surface: #FFFFFF; --segment-surface: #FFFFFF;
+  --pitch: #0F7B3F; --pitch-dark: #0A5C2F; --pitch-light: #E6F3EA;
+  --line: #FFFFFF; --yellow-card: #FFD60A; --red-card: #E5262B;
+  --label: #0B1A10; --label-secondary: rgba(11,26,16,.6);
+  --separator: rgba(11,26,16,.12); --fill: rgba(11,26,16,.06);
+  /* Kiçik mətn və qırmızı mesajlar üçün AA kontrastlı variantlar saxlanır. */
+  --text-secondary: #536459; --action-text: #0A6D35; --danger-text: #BD1C22;
+  --on-accent: #FFFFFF; --nav-background: rgba(243,246,242,.9);
+  --danger-background: #FCEBEC; --scrim: rgba(0,0,0,.4);
+  --scoreboard-bg: #0A5C2F; --scoreboard-muted: #CAE4D3;
+  --stripe-a: #0A5C2F; --stripe-b: #2B9852;
+  --subtle-shadow: 0 1px 2px rgba(0,0,0,.06);
+  --large-title: 2.5rem; --title-2: 1.375rem; --headline: 1.0625rem;
+  --body: 1.0625rem; --subheadline: .9375rem; --footnote: .8125rem;
+  --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem;
+  --touch-target: 2.75rem; --radius-card: .75rem; --radius-control: .625rem;
+  --duration: 250ms; --ease: cubic-bezier(.32,.72,0,1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #07110B; --surface: #0F1D14; --segment-surface: #264E34;
+    --pitch: #2FBF6B; --pitch-dark: #1E9A52; --pitch-light: rgba(47,191,107,.14);
+    --label: #F2F7F3; --label-secondary: rgba(242,247,243,.6);
+    --separator: rgba(242,247,243,.12); --fill: rgba(242,247,243,.08);
+    --text-secondary: #A5BAAC; --action-text: #4CD987; --danger-text: #FF7378;
+    --nav-background: rgba(7,17,11,.9); --danger-background: #34171A;
+    --scoreboard-bg: #0A2B18; --scoreboard-muted: #B5D9C2;
+    --stripe-a: #1E9A52; --stripe-b: #2FBF6B;
+  }
+}
