@@ -4,7 +4,21 @@ import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 
 const dom = new JSDOM('<div id="root"></div>', { url: 'https://todo.example/' });
-Object.assign(globalThis, { window: dom.window, document: dom.window.document, localStorage: dom.window.localStorage, sessionStorage: dom.window.sessionStorage, Event: dom.window.Event, IS_REACT_ACT_ENVIRONMENT: true });
+dom.window.matchMedia = query => ({ matches: query.includes('prefers-reduced-motion'), media: query, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
+Object.assign(globalThis, { window: dom.window, document: dom.window.document, localStorage: dom.window.localStorage, sessionStorage: dom.window.sessionStorage,
+  Event: dom.window.Event, CustomEvent: dom.window.CustomEvent, HTMLElement: dom.window.HTMLElement, HTMLInputElement: dom.window.HTMLInputElement, Element: dom.window.Element,
+  SVGElement: dom.window.SVGElement, Node: dom.window.Node, MutationObserver: dom.window.MutationObserver, getComputedStyle: dom.window.getComputedStyle,
+  requestAnimationFrame: callback => setTimeout(() => callback(performance.now()), 16), cancelAnimationFrame: clearTimeout, IS_REACT_ACT_ENVIRONMENT: true });
+globalThis.IntersectionObserver = class {
+  constructor(callback) { this.callback = callback; }
+  observe(target) { queueMicrotask(() => this.callback([{ target, isIntersecting: true, intersectionRatio: 1 }])); }
+  unobserve() {}
+  disconnect() {}
+};
+globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+globalThis.NodeFilter = dom.window.NodeFilter;
+dom.window.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+dom.window.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
 const { createRoot } = await import('react-dom/client');
 const { default: ForgotPasswordPage } = await import('../src/pages/ForgotPasswordPage.tsx');
 const { default: ResetPasswordPage } = await import('../src/pages/ResetPasswordPage.tsx');
@@ -83,7 +97,10 @@ test('registration confirmation blocks mismatches and successful signup opens pr
   await fill('register-confirm', 'newpassword'); await submit();
   assert.ok(document.querySelector('.content'));
   assert.ok(calls.some(call => call.url.endsWith('/register') && JSON.parse(call.options.body).confirmPassword === 'newpassword'));
-  await act(async () => [...document.querySelectorAll('button')].find(button => button.textContent === 'Çıxış').click());
+  const trigger = document.querySelector('[aria-label="Hesab menyusunu aç"]');
+  await act(() => trigger.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true })));
+  assert.ok(document.querySelector('.content'), 'Opening account menu must not log the user out');
+  await act(async () => document.querySelector('[role="menuitem"]').click());
   assert.equal(document.querySelector('.content'), null);
   assert.equal(sessionStorage.getItem('matchday-token'), null);
   assert.ok(calls.some(call => call.url.endsWith('/logout') && call.options.headers.Authorization === `Bearer ${jwt}`));

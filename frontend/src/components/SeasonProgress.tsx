@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { WEEKLY_GOAL } from '../constants';
 import type { Todo } from '../types/todo';
-import { YellowCardIcon } from './icons';
+import { Target, Trophy } from 'lucide-react';
+import { motion } from 'motion/react';
+import { transition, useMotionPreference } from '../lib/motion';
 
 export default function SeasonProgress({ todos }: { todos: Todo[] }) {
+  const reduced = useMotionPreference();
   const [now, setNow] = useState(new Date());
   useEffect(() => {
     // Yeni tamamlanma dərhal sayılsın; növbəti dəqiqəni gözləməsin.
@@ -25,14 +28,17 @@ export default function SeasonProgress({ todos }: { todos: Todo[] }) {
   }).length;
   const reached = completed >= WEEKLY_GOAL;
   return (
-    <section className={`season-progress ${reached ? 'goal-reached' : ''}`} aria-label="Həftəlik hədəf">
-      <div className="progress-label"><span>HƏFTƏLİK HƏDƏF</span><span>{completed} / {WEEKLY_GOAL}</span></div>
+    <motion.section className={`season-progress ${reached ? 'goal-reached' : ''}`} aria-label="Həftəlik hədəf"
+      initial={{ opacity: 0, y: reduced ? 0 : 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={transition}>
+      <div className="progress-heading"><span className="progress-icon"><Target size={19} aria-hidden="true" /></span>
+        <div className="progress-label"><span>HƏFTƏLİK HƏDƏF</span><p>Kiçik addımlar, böyük nəticələr.</p></div>
+        <span className="progress-count"><strong>{completed}</strong><span> / {WEEKLY_GOAL}</span></span></div>
       <div className="progress-track" role="progressbar" aria-label="Həftəlik hədəf"
         aria-valuemin={0} aria-valuemax={WEEKLY_GOAL} aria-valuenow={Math.min(completed, WEEKLY_GOAL)}
         aria-valuetext={`${completed} / ${WEEKLY_GOAL} tapşırıq`}>
-        <span style={{ width: `${Math.min(completed / WEEKLY_GOAL, 1) * 100}%` }} />
+        <motion.span initial={false} animate={{ scaleX: Math.min(completed / WEEKLY_GOAL, 1) }} transition={reduced ? { duration: 0 } : transition} />
       </div>
-      {reached && <p className="target-reached"><YellowCardIcon /> Hədəf tamamlandı</p>}
-    </section>
+      {reached && <p className="target-reached"><Trophy size={15} aria-hidden="true" /> Hədəf tamamlandı</p>}
+    </motion.section>
   );
 }
