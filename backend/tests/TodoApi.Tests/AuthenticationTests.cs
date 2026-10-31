@@ -18,16 +18,22 @@ namespace TodoApi.Tests;
 public sealed class AuthApplication : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection connection = new("Data Source=:memory:");
+    private readonly Dictionary<string, string?> previousEnvironment = new();
+    private void SetEnvironment(string key, string value)
+    {
+        previousEnvironment[key] = Environment.GetEnvironmentVariable(key);
+        Environment.SetEnvironmentVariable(key, value);
+    }
     public RecordingEmail Email { get; } = new();
     public AuthApplication()
     {
         connection.Open();
         // Program reads configuration before Build: environment settings are available then.
-        Environment.SetEnvironmentVariable("Jwt__Secret", "integration-test-secret-only-64-characters-long-no-production-use");
-        Environment.SetEnvironmentVariable("Jwt__Issuer", "MatchdayTests");
-        Environment.SetEnvironmentVariable("Jwt__Audience", "MatchdayTests");
-        Environment.SetEnvironmentVariable("Jwt__ExpiryMinutes", "60");
-        Environment.SetEnvironmentVariable("PasswordReset__FrontendUrl", "https://matchday.example");
+        SetEnvironment("Jwt__Secret", "integration-test-secret-only-64-characters-long-no-production-use");
+        SetEnvironment("Jwt__Issuer", "MatchdayTests");
+        SetEnvironment("Jwt__Audience", "MatchdayTests");
+        SetEnvironment("Jwt__ExpiryMinutes", "60");
+        SetEnvironment("PasswordReset__FrontendUrl", "https://matchday.example");
     }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -56,7 +62,11 @@ public sealed class AuthApplication : WebApplicationFactory<Program>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
-        if (disposing) connection.Dispose();
+        if (disposing)
+        {
+            connection.Dispose();
+            foreach (var (key, value) in previousEnvironment) Environment.SetEnvironmentVariable(key, value);
+        }
     }
 }
 
@@ -261,6 +271,7 @@ public sealed class AuthenticationTests
         }
     }
 }
+
 
 
 
