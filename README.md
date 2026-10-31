@@ -82,7 +82,7 @@ dotnet build backend/src/TodoApi/TodoApi.csproj
 dotnet run --project backend/src/TodoApi --launch-profile http
 ```
 
-Tətbiq açılarkən `MigrateAsync()` migration-ları tətbiq edir; baza yoxdursa yaradır. Əvvəlcədən mövcud eyniadlı baza varsa, tətbiqdən əvvəl quruluşunun uyğunluğunu yoxlayın.
+Yalnız Development mühitində tətbiq açılarkən `MigrateAsync()` migration-ları tətbiq edir; baza yoxdursa yaradır. Production-da migration ayrıca hazırlanıb tətbiq edilməlidir. Əvvəlcədən mövcud eyniadlı baza varsa, tətbiqdən əvvəl quruluşunun uyğunluğunu yoxlayın.
 API: [localhost:5000/api/todos](http://localhost:5000/api/todos)
 Swagger: [localhost:5000/swagger](http://localhost:5000/swagger)
 
@@ -145,7 +145,7 @@ Parollar PBKDF2-SHA256, 600000 iterasiya və hər parol üçün təsadüfi salt 
 
 **DB yenilənməsi:** bu layihə SQL Server istifadə edir, todo.db faylı yoxdur və fayl silmək lazım deyil.
 `AddAuthentication` migration-ı Users, unikal email indeksi və nullable Todo.UserId xarici açarını əlavə edir.
-Açılışda migration avtomatik tətbiq olunur. Əl ilə tətbiq etmək üçün backend qovluğunda:
+Yalnız Development açılışında migration avtomatik tətbiq olunur. Əl ilə tətbiq etmək üçün backend qovluğunda:
 
 ```sh
 dotnet tool restore
@@ -155,16 +155,16 @@ dotnet ef database update --project src/TodoApi -- --environment Development
 Köhnə todo-lar silinmir, amma sahibi məlum olmadığı üçün yeni istifadəçilərə göstərilmir; interfeysdə itmiş kimi görünə bilər. UserId null yalnız bu legacy qeydlər üçündür; yeni tapşırığın sahibi həmişə tokendən götürülür.
 Bazanın özünü silsəniz və ya dağıdıcı migration seçsəniz məlumat itə bilər; bu dəyişiklikdə belə əməliyyat yoxdur.
 
-Frontend tokeni localStorage-də saxlayır. Bu sadədir, amma XSS — səhifədə zərərli JavaScript işləməsi — tokeni oxuya bilər; real layihədə httpOnly cookie alternativini öyrənin.
+Frontend tokeni sessionStorage-də saxlayır və əvvəlki localStorage tokenini silir. Tab bağlananda sessiya bitir. Bu sadədir, amma XSS — səhifədə zərərli JavaScript işləməsi — tokeni oxuya bilər; real layihədə httpOnly cookie alternativini öyrənin.
 Səhifə yenilənəndə `/api/auth/me` sessiyanı yoxlayır; vaxt bitdikdə, çıxışda və todo sorğusuna 401 gəldikdə token silinir, giriş ekranı açılır.
-Çıxış tokeni serverdə ləğv etmir; artıq əldə edilmiş JWT müddəti bitənədək keçərlidir. Bu demo refresh token və revocation siyahısı saxlamır.
+Çıxış `/api/auth/logout` vasitəsilə serverdə hesabın bütün JWT sessiyalarını ləğv edir. Şifrə sıfırlananda da əvvəlki sessiyalar ləğv olunur. Serverə bağlantı yoxdursa yalnız yerli çıxış mümkündür. Refresh token yoxdur.
 Swagger Authorize düyməsinə yalnız tokeni yapışdırın; Bearer prefiksi avtomatik əlavə edilir.
 
 ## API endpoint-ləri
 
 | Metod | URL | Təsvir |
 | --- | --- | --- |
-| POST | /api/auth/register | Email, password, displayName ilə hesab yaradır; 201. |
+| POST | /api/auth/register | Email, password, confirmPassword, displayName ilə hesab yaradır; 201. |
 | POST | /api/auth/login | Email və password qarşılığında token və açıq istifadəçi məlumatı; 200. |
 | GET | /api/auth/me | Token sahibinin açıq məlumatı; Bearer tələb edir. |
 | GET | /api/todos?filter=all | Yalnız cari istifadəçinin tapşırıqları; active və completed də qəbul edilir. |
@@ -198,7 +198,7 @@ npm run build
 Əl ilə ssenari: qeydiyyatdan keçin, daxil olun, tapşırıq yaradın, redaktə edin, tamamlayın, filtrləri dəyişin, geri aktiv edin və silin.
 Səhifəni yeniləyəndə saxlanmış işlər qalmalıdır. Backend dayananda Azərbaycan dilində xəta mesajı görünməlidir.
 Çıxışdan sonra tokensiz GET /api/todos üçün 401 gözləyin. İkinci hesab birinci hesabın todo-larını görməməlidir.
-CI build yoxlayır; SQL Server tələb edən işləmə yoxlaması CI-a daxil deyil.
+CI build, frontend lint/test və SQLite üzərində backend HTTP inteqrasiya testlərini yoxlayır. Real SQL Server migration və SMTP provayderi ayrıca deployment yoxlaması tələb edir.
 
 ## Ekran görüntüsü
 
@@ -239,14 +239,18 @@ TODO axını: Todo → AppDbContext → GetTodos → CreateTodo → TodoCreatedN
 
 ## Gələcək planlar
 
-- Refresh token, rollar, email təsdiqi və parolun bərpası.
-- Avtomatik unit və integration testlər.
+- Refresh token, rollar və email təsdiqi.
+- Daha geniş performans və deployment testləri.
 - Hangfire üçün dayanıqlı SQL storage və idempotent bildirişlər.
 - Mərkəzi xəta idarəsi, strukturlaşdırılmış loglar və baza-job əlaqəsinin etibarlılığı.
-- Real yayımlama üçün ayrıca migration addımı və istehsal konfiqurasiyası.
+- Deployment avtomatlaşdırılması və infrastruktur konfiqurasiyası.
 
 ## Lisenziya
 
 [MIT](LICENSE).
 
 İstinadlar: [JWT Bearer konfiqurasiyası](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication?view=aspnetcore-8.0), [PBKDF2 API](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes.pbkdf2?view=net-8.0).
+
+## Şifrə sıfırlama və SMTP
+
+Forgot/Reset Password səhifələri, birdəfəlik linklər, sorğu limitləri və server sessiya ləğvi əlavə edilib. Quraşdırma, migration, SMTP açarları və təhlükəsizlik qeydləri: [Authentication təlimatı](docs/06-authentication.md).

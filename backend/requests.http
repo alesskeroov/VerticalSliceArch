@@ -1,3 +1,5 @@
+@resetToken =
+@newPassword =
 @baseUrl = http://localhost:5000
 @token =
 @password =
@@ -42,7 +44,7 @@ Content-Type: application/json
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
-{"email":"{{email}}","password":"{{password}}","displayName":"Öyrənən"}
+{"email":"{{email}}","password":"{{password}}","confirmPassword":"{{password}}","displayName":"Öyrənən"}
 
 ### Login cavabındakı tokeni yuxarıdakı boş token dəyişəninə köçürün.
 POST {{baseUrl}}/api/auth/login
@@ -56,3 +58,19 @@ Authorization: Bearer {{token}}
 
 ### Tokensiz sorğu 401 qaytarmalıdır.
 GET {{baseUrl}}/api/todos
+
+### Şifrə sıfırlama linki istə; SMTP konfiqurasiyası tələb olunur.
+POST {{baseUrl}}/api/auth/forgot-password
+Content-Type: application/json
+
+{"email":"{{email}}"}
+
+### Bütün hesab sessiyalarını serverdə ləğv et.
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### Tokeni yalnız yerli olaraq emaildəki linkdən götürün; faylı real tokenlə commit etməyin.
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{"email":"{{email}}","token":"{{resetToken}}","password":"{{newPassword}}","confirmPassword":"{{newPassword}}"}

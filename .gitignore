@@ -455,3 +455,6 @@ appsettings.Local.json
 
 # Development sirrləri yalnız yerli faylda qala bilər.
 appsettings.Development.json
+
+# Agentlərin izolə edilmiş iş nüsxələri.
+.worktrees/

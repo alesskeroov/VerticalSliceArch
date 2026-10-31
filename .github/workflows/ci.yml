@@ -9,6 +9,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - run: dotnet build backend/src/TodoApi/TodoApi.csproj --configuration Release
+      - run: dotnet test backend/tests/TodoApi.Tests/TodoApi.Tests.csproj --configuration Release
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -17,4 +18,9 @@ jobs:
       - run: npm ci
         working-directory: frontend
       - run: npm run build
+        working-directory: frontend
+
+      - run: npm run lint
+        working-directory: frontend
+      - run: npm test
         working-directory: frontend
