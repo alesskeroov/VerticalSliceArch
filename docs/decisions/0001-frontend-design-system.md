@@ -1,11 +1,11 @@
 # 0001: Frontend dizayn sistemi və animasiya dili
 
-- **Status:** Təklif
+- **Status:** Əvəz olunub — [0002 təklifi ilə](0002-matchday-football-design-system.md); bu təklif heç vaxt qəbul edilməyib
 - **Tarix:** 2026-10-31
 - **Əlaqəli tapşırıq:** TASK-UI-001
 - **Təklif edən:** Jane (Frontend), Soprano (Team Lead)
 - **Sənədləşdirən:** Watson (Docs)
-- **Təsdiq:** İstifadəçinin təsdiqi gözlənilir; tətbiqə başlanmayıb
+- **Təsdiq:** Qəbul edilməyib. İstifadəçinin yeni istiqaməti futbol konseptinin saxlanmasını tələb edir; bu slate/mavi təklif qüvvədə deyil. Tətbiqə başlanmayıb.
 
 ## Kontekst
 

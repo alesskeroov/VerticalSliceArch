@@ -66,8 +66,23 @@ Cədvəldəki vizual istiqamətlər komandanın tövsiyəsidir; məhsulların ö
 
 ## Nəticə / Tövsiyə
 
-UI kitabxanası olmadığı üçün istifadəçinin istəyinə uyğun Tailwind CSS + seçilmiş shadcn/ui komponentləri + Motion təklif edilir. Bu, hələ qəbul edilmiş qərar deyil. Paketlərin konkret versiyaları tətbiq mərhələsində mövcud React/Vite/Node və lockfile ilə yoxlanacaq. Əlavə animasiya kitabxanası, router və form/state kitabxanası bu audit əsasında tələb olunmur.
+İstifadəçinin son göstərişinə uyğun Matchday futbol konsepti, tünd yaşıl səthlər, scoreboard, qol sayı və qısa celebration saxlanır. Əvvəlki slate/mavi istiqamət qəbul edilməyib və qüvvədən düşüb. UI kitabxanası olmadığı üçün Tailwind CSS + seçilmiş shadcn/ui komponentləri + Motion + lucide-react təklif edilir. Bu, hələ qəbul edilmiş qərar deyil. Paketlərin konkret versiyaları tətbiq mərhələsində mövcud React/Vite/Node və lockfile ilə yoxlanacaq. Əlavə animasiya kitabxanası, router və form/state kitabxanası bu audit əsasında tələb olunmur.
 
-Əlaqəli qərar təklifi: [0001 — Frontend dizayn sistemi](../decisions/0001-frontend-design-system.md). Audit və qəbul meyarları: [TASK-UI-001](../tasks/TASK-UI-001-frontend-redesign.md).
+Əlaqəli cari qərar təklifi: [0002 — Matchday futbol dizayn sistemi](../decisions/0002-matchday-football-design-system.md). Tarixi, qəbul edilməmiş [0001 təklifi](../decisions/0001-frontend-design-system.md) yeni istifadəçi tələbi ilə əvəz olunub. Audit və qəbul meyarları: [TASK-UI-001](../tasks/TASK-UI-001-frontend-redesign.md).
+
+
+## Son prompt üzrə dəqiqləşdirmələr
+
+Login centering, sticky blur header, transform əsaslı filter indicator, password düyməsinin type/aria/keyboard dəstəyi və latin-ext font importu artıq mövcuddur. Yeni plan bunları yoxdan yaratmaq kimi təqdim etmir; hizalama/ölçü, menyu, typo, loading və motion davranışını təkmilləşdirir. Scoreboard grid-inin boş sahəsi və təkrar brand, progress-in 0 vəziyyəti, row exit-in olmaması və Ə render riski ayrıca qəbul meyarlarına çevrilib.
+
+Font auditində Jane lokal latin-ext 600 fontunun Ə/ə glyph-lərini əhatə etdiyini təsdiqləyib. `main.tsx` ext subset-i latin subset-dən əvvəl import edir; hər iki CSS eyni family/style/weight və unicode-range olmadan face elan edir. Ona görə “latin-ext əlavə et” təkbaşına düzgün diaqnoz deyil. Təklif Azərbaycan başlıqlarında system-ui, Barlow-da ASCII brand/rəqəmlərdir; real glyph/fallback render testi tələb olunur. [Barlow Condensed rəsmi Fontsource səhifəsi](https://fontsource.org/fonts/barlow-condensed).
+
+Lucide React rəsmi sənədi standalone inline SVG komponentləri, TypeScript tipləri və tree-shaking dəstəyini göstərir. `lucide-react`-dən yalnız lazım olan named ikonlar (Mail, Lock, Eye/EyeOff, LogOut və s.) seçiləcək; icon-only düymənin accessible adı düyməyə verilir, dekorativ ikon aria-hidden olur. [Lucide React](https://lucide.dev/guide/react).
+
+Motion `layoutId` ortaq indicator keçidi üçün nəzərdə tutulub. Bu tətbiqdə yalnız izolə edilmiş, bərabər slot ölçülü filtr indicator-u transform-only tween ilə hərəkət edəcək; label scale, ölçü interpolasiyası və spring default-u yoxdur. Sətirlərdə ehtiyac olarsa yalnız `layout="position"` mümkündür. [Motion layout animasiyaları](https://motion.dev/docs/react-layout-animations).
+
+Tailwind/shadcn semantic tema dəyişənləri mövcud yaşıl tokenləri vahid background/foreground/primary/input/ring kimi xəritələməyə uyğundur; ümumi `transition: all` istifadə etmək tələb deyil. [Tailwind theme](https://tailwindcss.com/docs/theme), [shadcn theming](https://ui.shadcn.com/docs/theming).
+
+Soprano bu mərhələdə repodakı tarixi login/dashboard şəkillərini yoxlayıb. Son promptla yeni image attachment gəlməyib; istifadəçinin yazılı screenshot düzəlişləri agentin yeni screenshot görməsi kimi təqdim edilmir. Protected dashboard canlı login ilə yoxlanmayıb. Bütün tətbiq detalları istifadəçi təsdiqini gözləyən təklifdir.
 
 İmza: **Watson**

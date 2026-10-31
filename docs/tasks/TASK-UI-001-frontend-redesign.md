@@ -1,7 +1,7 @@
-# TASK-UI-001: Frontend dizaynının yenilənməsi
+# TASK-UI-001: Matchday frontend dizaynının yenilənməsi
 
 - **Status:** İcrada
-- **Mərhələ:** Addım 1 — audit və plan hazırdır; tətbiq üçün istifadəçi təsdiqi gözlənilir
+- **Mərhələ:** Addım 1 — yenilənmiş audit və plan; tətbiq üçün istifadəçi təsdiqi gözlənilir
 - **Tarix:** 2026-10-31
 - **Məsul agentlər:** Soprano (Team Lead), Jane (Frontend), Watson (Docs)
 - **Branch-lər:** `feature/TASK-UI-001-frontend-redesign`, `docs/TASK-UI-001-frontend-redesign`
@@ -10,75 +10,122 @@
 - **PR-lər:** Açılmayıb; tətbiq və final review mərhələsi başlamayıb
 - **Sənədləşdirən:** Watson
 
-## Təsvir
+## Təsvir və son istiqamət
 
-İstifadəçi mövcud frontend görünüşünü bəyənmir və müasir, peşəkar, səliqəli, responsive və əlçatan dizaynla yenilənməsini istəyir. Addım 1-də yalnız audit, araşdırma və plan hazırlanır. Addım 2 istifadəçi təklifi təsdiqləyəndən sonra başlanır. Backend/API və mövcud funksiyalar dəyişdirilmir.
+İstifadəçi mövcud görünüşün keyfiyyətini yüksəltmək istəyir, amma Matchday-in futbol konsepti **saxlanmalıdır**: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayı və qısa tamamlama effekti. Əvvəlki slate/mavi workspace təklifi qəbul edilməyib və [0002 futbol dizayn sistemi təklifi](../decisions/0002-matchday-football-design-system.md) ilə əvəz olunur. Yeni prompt tətbiq icazəsi deyil: Addım 1-də yalnız audit/plan/sənəd, Addım 2-də ayrıca təsdiqdən sonra kod.
 
-Kökdə qayda faylı `agents.md` adlanır; Windows-da `AGENTS.md` yolu ilə oxunur. Fayl oxunub və istifadəçinin faylı dəyişdirilməyib. Soprano işi Jane-ə həvalə edib; Watson yalnız `docs/` yazır. Rocky üçün backend işi yoxdur.
+Soprano işi Jane-ə həvalə edib; Watson yalnız `docs/` yazır. Kökdə `agents.md` qayda faylı Windows-da `AGENTS.md` yolu ilə oxunub; istifadəçinin faylı dəyişdirilməyib. Rocky üçün backend işi yoxdur.
 
 ## API kontraktı və qorunan axınlar
 
-Redesign API-yə endpoint, request/response sahəsi və auth semantikası əlavə etmir. Cari `src/api/` servisləri və sessionStorage auth axını saxlanır. Mövcud ekranlar React state ilə dəyişir; ayrıca router yoxdur. Login, Register, Forgot Password, Reset Password, reset fragmentinin oxunub tarixçədən silinməsi, logout, protected To-Do görünüşü saxlanmalıdır.
+Backend, endpoint-lər, request/response sahələri və auth semantikası dəyişmir. Cari `src/api/` servisləri, sessionStorage axını və TypeScript strict saxlanır. Login/Register/Forgot/Reset səhifələrinin mövcud state əsaslı keçidləri və reset fragmentinin oxunub tarixçədən silinməsi qorunur; ayrıca router əlavə edilmir.
 
-To-Do yaratma, redaktə, tamamlama/aktiv etmə, silmə təsdiqi, filtr, aktiv/tamamlanmış saylar və həftəlik məqsəd hesablaması qorunur. Layout dəyişməsi məlumat modelinin və hesablamanın dəyişməsi deyil.
+To-Do yaratma, redaktə, tamamlama/aktiv etmə, silmə təsdiqi, filtr, aktiv/tamamlanmış saylar və həftəlik məqsəd hesablaması dəyişmir. Scoreboard vizual balansı düzəlir, məlumat hesablaması dəyişmir. Avatar menyusu real logout əməlini saxlayır, əlavə saxta hesab funksiyası yaratmır.
 
-## Audit sübutları və sərhədi
+## Sübutların sərhədi
 
-Jane cari checkout-un komponentlərini, stillərini, `package.json` və `tsconfig.json` fayllarını oxuyub. Soprano cari Vite frontend-in login ekranını browser-də açıb: tünd görünüşdə dar panel, böyük MATCHDAY yazısı, yaşıl CTA və ekranın aşağısında qeydiyyat keçidi müşahidə olunub. Protected To-Do ekranına real hesabla daxil olunmayıb; dashboard tapıntıları kod və mövcud tarixi screenshot-lara əsaslanır. Tarixi screenshot cari runtime yoxlaması kimi təqdim edilmir.
+- **Kod auditi:** Jane cari checkout-un komponentlərini, stillərini, paketlərini və strict ayarını oxuyub. Dashboard tapıntıları kod və repodakı tarixi screenshot-lara əsaslanır.
+- **Əvvəlki canlı yoxlama:** Soprano Vite login ekranını browser-də açıb, dar tünd panel və böyük MATCHDAY yazısını müşahidə edib. Real hesabla protected dashboard-a daxil olunmayıb.
+- **Son istifadəçi məlumatı:** Login/dashboard üzrə aşağıdakı konkret düzəlişlər istifadəçinin yazılı təsviridir. Son promptla yeni screenshot attachment mövcud deyil; təsvir yeni screenshot-un agent tərəfindən görülməsi kimi təqdim edilmir.
+- **Font sübutu:** `main.tsx` artıq latin-ext 600/700 və latin 600/700 import edir. Jane font binary cmap-də latin-ext 600 üçün U+018F Ə və U+0259 ə əhatəsini təsdiq edib. Hər iki subset eyni family/style/weight və unicode-range olmadan elan olunduğundan sıralama/fallback riski var; problem sadəcə latin-ext paketinin olmaması deyil.
 
-| Tapıntı | Mənbə / təsir |
+## Mövcud UI auditinin nəticələri
+
+| Tapıntı | Dəqiq mənbə / düzəliş istiqaməti |
 |---|---|
-| Desktop-da da dar, tək sütun | `App.css` `.page` maksimum 42.5rem/680px; geniş ekranın sahəsi zəif istifadə edilir |
-| Hesab tablosu əsas işdən dominantdır | `.score-display strong` 4.5rem; futbol zolaqları, QOL və konfetti gündəlik tapşırıqdan diqqət yayındıra bilər — estetik qiymətləndirmə |
-| Auth ekranları sadə, təcrid edilmiş paneldir | `auth.css` maksimum 30rem; dörd səhifədə label/input/button/error strukturu təkrarlanır |
-| Vahid UI primitivləri yoxdur | Button, Input, FormField və StatusPanel səviyyəsi ayrı qurulmayıb; UI kitabxanası yoxdur |
-| CSS məsuliyyətləri qarışır | Qlobal button/input/h1, təkrar `.page`, `.filters` və media qaydaları; yeni stilin yan təsir riski var |
-| Loading üçün struktur əvəzedicisi yoxdur | Mətn və spinner var, skeleton yoxdur |
-| Tema yalnız OS seçiminə bağlıdır | `prefers-color-scheme`; tətbiqdə açıq/tünd/sistem nəzarəti yoxdur |
-| Animasiya dili yeni tələbə uyğun deyil | `row-enter` max-height, navigation font-size, proqres width/background animasiyası; konfetti 700ms, QOL 1000ms |
-| Test runner sənədlə fərqlənir | Qayda faylı Vitest deyir, faktiki `npm test` Node test runner + jsdom-dur |
+| Login formunun qrupu və ritmi zəifdir | `auth.css` dar 30rem paneldə logo+card artıq flex ilə mərkəzləşir; yeni AuthShell ölçü/hizalama/keyboard-safe scroll-u təkmilləşdirəcək |
+| Password göstərişi xarici mətn düyməsidir | Password daxilində sağ Eye/EyeOff icon button; ölçü email ilə bərabər |
+| Auth markup təkrarlanır | Dörd auth səhifəsi üçün ortak FormField/AuthShell/status elementləri |
+| Header və məzmun kənarları eyni davranmır | Sticky blur artıq var; header eyni content container ilə hizalanacaq |
+| Scoreboard grid-ində boş sahə var | `Scoreboard.tsx` üç sütun təklif edir, iki görünən blok və gizli status var; QOL/QALAN balanslanacaq |
+| Card daxilində MATCHDAY təkrarı var | `match-meta` daxilində əlavə brand çıxarılacaq, tarix qalacaq |
+| Font importu mövcuddur, Ə riski qalır | Eyni-weight face sıralaması; Azərbaycan başlıqları üçün system-ui, Barlow yalnız ASCII brand/rəqəm və ya unicode-range həlli yoxlanacaq |
+| Loading struktur göstərmir | Mətn/spinner var; ölçünü qoruyan skeleton + status əlavə olunacaq |
+| Tema yalnız OS-dən gəlir | Açıq/tünd/sistem seçimi və semantic tokenlər təklif olunur; futbol palitrası saxlanır |
+| Mövcud motion yeni tələbə uyğun deyil | `row-enter` max-height, header font-size, progress width/background; konfetti 700ms/QOL 1000ms əvəzinə transform/opacity 150–300ms |
+| Qlobal CSS və təkrar qaydalar var | button/input/h1 və təkrar `.page`/`.filters`; komponent sərhədləri ilə azaldılacaq |
+| Test runner qayda nümunəsindən fərqlidir | Faktiki Node test runner + jsdom, qayda faylında Vitest yazılıb; cari suite yanlış təqdim edilmir |
 
-Qorunacaq yaxşı əsaslar: TypeScript strict, 44px minimum idarələr, görünən focus, native dialog fokus/Escape davranışı və reduced-motion media qaydası. Bunların mövcudluğu bütün UI üçün tam əlçatanlıq auditi keçirildiyi mənasına gəlmir.
+Mövcud yaxşı əsaslar qorunur: 44px idarələr, focus-visible, native dialog-un klaviatura/Escape davranışı, reduced-motion media qaydası, API qatının ayrılması və strict TypeScript.
 
-## Təklif olunan istiqamət
+## Təsdiqdən sonra icra ardıcıllığı
 
-Sakit slate + mavi vurğulu məhsuldarlıq workspace-i; Matchday adı və mövcud göstəricilər saxlanır. Desktop-da əsas tapşırıq siyahısı və kompakt həftəlik xülasə, mobil ekranda bir sütun. Auth səhifələri ortaq AuthShell daxilində eyni tipoqrafiya və forma vəziyyətlərini istifadə edir.
+1. Hazır auth dəyişikliklərinin `main`-ə inteqrasiyası həll olunur, Jane-in mövcud branch-i həmin baseline üzərinə yenilənir. Backend commitləri redesign adı ilə daşınmır.
+2. Tailwind + Vite setup, semantic tokenlər, seçilmiş shadcn/ui primitivləri, `motion/react` və named `lucide-react` ikonları; paket/lockfile dəyişikliyi Team Lead review-dan keçir.
+3. Button/Input/Label/FormField, PasswordField, AuthShell, StatusPanel, Skeleton, avatar DropdownMenu, AlertDialog, filtr indicator və statik PitchDecoration hazırlanır.
+4. Login, Register, Forgot/Reset və dashboard yeni primitivlərə keçirilir; scoreboard və həftəlik hədəf saxlanır.
+5. Məhdud view/list/mikro-interaksiya, qısa goal/confetti, progress scaleX və reduced-motion davranışı əlavə olunur.
+6. Regression, responsive/AA/klaviatura/zoom/font yoxlamaları, `npm run lint`, `npm run build`, `npm test`, PR şablonu və Soprano review; Watson yekun statusu yeniləyir.
 
-Dəqiq rənglər, şrift, ölçülər, spacing, radius, kölgə, tema və motion qaydaları [qərar təklifində](../decisions/0001-frontend-design-system.md) yazılıb. Bu təklif hələ istifadəçi tərəfindən qəbul edilməyib.
+## Qəbul meyarları
 
-## Addım 2 — yalnız təsdiqdən sonra plan
+### Addım 1 və təsdiq
 
-1. Authentication dəyişikliklərinin `main`-ə inteqrasiyası həll edilir; frontend branch-i bu baseline üzərinə yenilənir. Backend commitləri redesign adı altında daşınmır və dəyişdirilmir.
-2. Mövcud Vite layihəsinə Tailwind inteqrasiyası və mərkəzi semantic tokenlər əlavə edilir; paket/lockfile dəyişikliyi Soprano tərəfindən review olunur.
-3. Seçilmiş shadcn Button/Input/Label/Checkbox/Card/AlertDialog/ToggleGroup/Skeleton və kiçik FormField/StatusPanel/AuthShell hazırlanır.
-4. Mövcud To-Do ekranı və dörd auth səhifəsi yeni primitivlərə keçirilir; endpoint, URL/reset fragment və davranış qorunur.
-5. Motion səhifə/görünüş, ilkin siyahı stagger-i, mikro-interaksiya və vacib olmayan scroll görünməsinə tətbiq edilir; yalnız transform/opacity, 150–300ms ease-out.
-6. Mobile-first responsive, AA rəng kombinasiyaları, klaviatura, focus, dialog focus return, 200% zoom, uzun Azərbaycan mətnləri və reduced-motion yoxlanır.
-7. Regression testləri, `npm run lint`, `npm run build`, `npm test`, vizual QA və qaydadakı PR şablonu ilə PR; Soprano review-dan sonra yekun sənədləşmə.
+- [x] Kök qayda faylı yenidən oxunub, real Jane/Watson rolları ilə iş bölünüb.
+- [x] Komponentlər, stillər, paketlər və TypeScript strict audit edilib.
+- [x] İstifadəçinin futbol konseptini saxlamaq tələbi slate/mavi təklifi əvəz edib.
+- [x] Araşdırma, yeni qərar təklifi və docs indeksi yenilənib.
+- [ ] İstifadəçi yeni dizayn/stack təklifini təsdiqləyib; bundan əvvəl kod/paket dəyişikliyi yoxdur.
+
+### Login və auth səhifələri
+
+- [ ] Logo və card birlikdə həm üfüqi, həm şaquli mərkəzdədir; kiçik hündürlükdə forma və keçidlər scroll ilə əlçatandır.
+- [ ] Email/password eyni eni və hündürlüyü bölüşür; solda Mail/Lock ikonları var.
+- [ ] Password daxilində sağ Eye/EyeOff button `type="button"`, `aria-label="Parolu göstər"` / `"Parolu gizlət"`, klaviatura və görünən focus ilə işləyir; dekorativ ikonlar aria-hidden-dir.
+- [ ] “Şifrəmi unutdum?” password label-in sağında eyni sətirdədir; mobil ekranda daşmır.
+- [ ] Submit zamanı spinner, busy/disabled və təkrar submit qoruması var; düymə ölçüsü dəyişmir.
+- [ ] Yanlış girişdə yumşaq card shake və inline xəta var; reduced-motion-da shake söndürülür, error yenə əlçatandır.
+- [ ] Card yumşaq giriş effekti ilə görünür; auth səhifələri eyni design system-i paylaşır.
+- [ ] Register/Forgot/Reset validation, loading/success/error və mövcud keçidlər pozulmayıb.
+
+### Header, hesab menyusu və fon
+
+- [ ] Sticky, yarımşəffaf blur header məzmunla eyni konteyner enində/hizasındadır; statik blur readability-ni pozmur.
+- [ ] Ayrı “Çıxış” mətni əvəzinə istifadəçi inisialı avatar və LogOut icon trigger var; hover/focus tooltip “Çıxış” göstərir.
+- [ ] Trigger klikdə kiçik menyu açır; real logout menyunun içindədir, trigger öz-özünə logout etmir.
+- [ ] Menyu klaviatura, Escape, xaricə klik və fokusun trigger-ə qayıtmasını dəstəkləyir; inisial uzun/boş adlarda daşmır.
+- [ ] Arxa fonda statik, zəif futbol meydanı xətləri var; mətn/form kontrastını azaltmır və klikləri tutmur.
+
+### Scoreboard və həftəlik hədəf
+
+- [ ] 0:0 daxil QOL/QALAN rəqəmləri balanslı sol/sağ yerləşir, boş sütun yoxdur.
+- [ ] Card daxilində təkrar MATCHDAY çıxarılıb, tarix saxlanır; əsas header brendi qalır.
+- [ ] Qol sayı dəyişəndə qısa rəqəm animasiyası və yalnız server tamamlanmanı təsdiqləyəndə qısa confetti/sparkle var.
+- [ ] Geri aktiv etmə/reload zamanı yanlış qol effekti yaranmır; reduced-motion-da dekorativ effekt söndürülür.
+- [ ] HƏFTƏLİK HƏDƏF və bütün başlıqlarda Ə/ə və digər Azərbaycan hərfləri render olunur; sadəcə import əlavə etməklə yoxlanmış sayılmır.
+- [ ] Progress track qalın və 0-da aydındır; 0 dəyər saxta müsbət fill kimi göstərilmir.
+- [ ] Progress rəvan artır; width/background animasiyası əvəzinə transform scaleX istifadə olunur, semantik aria dəyərləri düzgün qalır.
+
+### Filtr və tapşırıq siyahısı
+
+- [ ] Hamısı/Meydanda/Qol seçimi izolə edilmiş indicator `layoutId` ilə sabit bərabər slotlar arasında transform-only tween 180–220ms hərəkət edir; label scale və width/height animasiyası yoxdur.
+- [ ] Filter dəyişəndə yumşaq siyahı keçidi, mövcud `aria-pressed` və keyboard davranışı qorunur.
+- [ ] Add input-un focus vəziyyəti görünür; yeni sətir daxilolma, silinən sətir çıxış effektinə malikdir.
+- [ ] İlkin görünmə stagger-i məhduddur və uzun siyahını gecikdirmir; çıxış animasiyası olmayan sətirlər üçün də action state düzgün qalır.
+- [ ] Empty state PitchIcon ilə zəif, qısa görünmə effekti istifadə edir; sonsuz dekorativ animasiya yoxdur.
+- [ ] Create/edit/toggle/delete, delete təsdiqi, filtrlər və bütün mövcud say/weekly hesablamaları regression testlərindən keçir.
+
+### Ümumi keyfiyyət və “Bitdi”
+
+- [ ] Bütün animasiyalar 150–300ms ease-out, yalnız transform/opacity; reduced-motion nəzərə alınır.
+- [ ] Skeleton, boş/xəta/success vəziyyətləri ölçünü və ekran oxuyucu statuslarını düzgün saxlayır.
+- [ ] Mobile-first responsive, 200% zoom, uzun Azərbaycan mətnləri, WCAG AA kontrastı, keyboard və görünən focus yoxlanıb.
+- [ ] TypeScript strict saxlanılıb, yeni `any` yoxdur; yalnız named lucide ikonları import olunur.
+- [ ] Backend/API/route və auth storage dəyişməyib; pending auth baseline-ı qorunub. Logout/401-də protected To-Do dərhal bağlanır, exit/wait animasiyası köhnə istifadəçinin məlumatını ekranda saxlamır.
+- [ ] Uyğun testlər əlavə edilib; `npm run lint`, `npm run build`, `npm test` keçir.
+- [ ] PR açılıb, qaydadakı şablon və ingiliscə commit + `Agent: Jane` footer istifadə olunub, Soprano təsdiqləyib; main-ə birbaşa push yoxdur.
+- [ ] Watson task/qərar/araşdırma/index sənədlərini yekun nəticə ilə yeniləyib.
 
 ## Asılılıqlar və sənəd uyğunsuzluqları
 
-- Audit baseline-ı `origin/main`-dən 7 commit irəlidədir. Forgot/reset frontend-i və testləri itirilməməlidir. Bu asılılıq tətbiqdən əvvəl həll edilmədən köhnə frontend əsasında redesign başlanmamalıdır.
-- Root qayda faylının standart struktur/əmrləri faktiki layihə ilə tam eyni deyil: backend `src/TodoApi`, frontend API qatı `src/api`, test runner isə Node/jsdom-dur. Təkcə standart sxemə uyğunlaşmaq üçün scope-dan kənar köçürmə edilməyəcək.
-- `docs/01-layihe-icmali.md`, `02-qerarlar.md` və `03-sonra-arasdirilacaq-movzular.md` əvvəlki auth vəziyyətini təsvir edən hissələr daşıyır (localStorage, sessiya ləğvinin olmaması, avtomatik migration/test planları). Cari auth qeydləri `06-authentication.md`-dədir; köhnə qəbul edilmiş qərarlar bu tapşırıqda səssiz dəyişdirilmir. Soprano-ya məlumat verilib.
+Audit baseline-ı `origin/main`-dən 7 commit irəlidədir; Forgot/Reset və auth testləri itirilməməlidir. Bu asılılıq tətbiqdən əvvəl həll ediləcək. Qayda faylının standart qovluq/runner nümunəsi faktiki `src/TodoApi`, `src/api`, Node/jsdom ilə fərqlənir; bu redesign üçün böyük struktur refaktorinqi planlaşdırılmır.
 
-## Qəbul meyarları və "Bitdi"
+Köhnə docs/01, docs/02 və docs/03-də localStorage, revocation olmaması, test/rate limit planları kimi tarixlə əlaqəli auth qeydləri var. Cari auth review sənədi docs/06-authentication.md-dir. Ziddiyyət Soprano-ya bildirilib, tarixi qəbul edilmiş qərarlar səssiz dəyişdirilməyib.
 
-- [x] Mövcud komponentlər, stillər, paketlər və strict ayarı audit edilib.
-- [x] Araşdırma, qərar təklifi və docs indeksi hazırlanıb.
-- [ ] İstifadəçi dizayn və kitabxana təklifini təsdiqləyib.
-- [ ] Mövcud auth baseline-ı qorunmaqla implementasiya başlayıb.
-- [ ] Tokenlər və reusable komponentlər, sonra bütün səhifələr hazırlanıb.
-- [ ] Backend/API dəyişməyib, bütün mövcud funksiyalar və görünüş keçidləri işləyir.
-- [ ] Responsive, WCAG AA kontrast, klaviatura və focus yoxlanıb.
-- [ ] Yalnız transform/opacity animasiyaları 150–300ms, reduced-motion dəstəyi ilə tətbiq edilib.
-- [ ] TypeScript strict saxlanılıb, yeni `any` yoxdur.
-- [ ] Uyğun regression testləri əlavə edilib və `npm run lint`, `npm run build`, `npm test` keçir.
-- [ ] PR açılıb və Soprano təsdiqləyib; `main`-ə birbaşa push edilməyib.
-- [ ] Watson yekun nəticə, qərar statusu və docs indeksini yeniləyib.
+## Yoxlamalar və nəticə
 
-## Nəticə / Qeydlər
+Bu yenilənmiş audit mərhələsində Soprano cari frontend baseline-ında `npm run lint` — exit 0, `npm run build` — exit 0 (TypeScript strict + Vite 7.3.7), `npm test` — 12/12, exit 0 nəticələrini yenidən təsdiqləyib. Bunlar redesign sonrası nəticə deyil. Repodakı tarixi login/dashboard screenshot-ları bu mərhələdə Soprano tərəfindən vizual yoxlanıb; yeni attachment kimi təqdim edilmir. Kod/dependency dəyişdirilməyib.
 
-Bu mərhələdə frontend/backend kodu, konfiqurasiya və paketlər dəyişdirilməyib. Cari frontend baseline-ı Soprano tərəfindən yoxlanıb: `npm run lint` — exit 0, `npm run build` — exit 0 (TypeScript strict və Vite 7.3.7), `npm test` — 12/12, exit 0. Bunlar mövcud tətbiqin baseline yoxlamalarıdır; redesign implementasiyası üçün yekun yoxlama deyil. Tapşırıq "Tamamlandı" deyil; yalnız Addım 1 hazırlanıb, tətbiq üçün təsdiq gözlənilir.
+Tapşırıq “Tamamlandı” deyil. Yalnız Addım 1 yenilənib, istifadəçi təsdiqi gözlənilir.
 
 İmza: **Watson**
