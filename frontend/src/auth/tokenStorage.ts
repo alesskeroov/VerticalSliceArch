@@ -9,16 +9,19 @@ export function getExpiry(token: string): number {
   } catch { return 0; }
 }
 export function getStoredToken(): string | null {
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token && getExpiry(token) > Date.now()) return token;
+  // Discard tokens persisted by older releases.
   localStorage.removeItem(TOKEN_KEY);
+  const token = sessionStorage.getItem(TOKEN_KEY);
+  if (token && getExpiry(token) > Date.now()) return token;
+  sessionStorage.removeItem(TOKEN_KEY);
   return null;
 }
 export function saveToken(token: string) {
-  // Sadə demo üçün localStorage seçilib; XSS tokeni oxuya bilər. Real alternativ httpOnly cookie-dir.
-  localStorage.setItem(TOKEN_KEY, token);
+  // Session ends when this browser tab closes; scripts must still be protected against XSS.
+  sessionStorage.setItem(TOKEN_KEY, token);
 }
 export function clearSession() {
+  sessionStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(TOKEN_KEY);
   window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
 }

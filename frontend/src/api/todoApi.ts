@@ -2,7 +2,7 @@ import { clearSession, getStoredToken } from '../auth/tokenStorage';
 import type { Todo, TodoFilter } from '../types/todo';
 
 // Ünvanı koddan ayırırıq ki, fərqli mühitlərdə yalnız .env dəyişsin.
-const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const baseUrl = (import.meta.env?.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 async function send(path: string, options?: RequestInit) {
   let response: Response;
@@ -47,3 +47,4 @@ export async function toggleTodo(id: string): Promise<Todo> {
 export async function deleteTodo(id: string): Promise<void> {
   await send(`/${id}`, { method: 'DELETE' });
 }
+

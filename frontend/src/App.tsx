@@ -12,6 +12,10 @@ import './App.css';
 import { useAuth } from './auth/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import { consumeResetLink } from './auth/resetLink';
+const initialResetLink = consumeResetLink(window.location, window.history);
 
 function Matchday() {
   const { user, logout } = useAuth();
@@ -97,8 +101,10 @@ function Matchday() {
 // Şərtli render üçün router lazım deyil; çıxışda əvvəlki istifadəçinin ekranı tam bağlanır.
 export default function App() {
   const auth = useAuth();
-  const [page, setPage] = useState<'login' | 'register'>('login');
-  useEffect(() => { if (!auth.user) setPage('login'); }, [auth.user]);
+  const [page, setPage] = useState<'login' | 'register' | 'forgot' | 'reset'>(initialResetLink ? 'reset' : 'login');
+  useEffect(() => { if (auth.user) setPage(current => current === 'reset' ? current : 'login'); }, [auth.user]);
+  if (page === 'reset' && initialResetLink) return <ResetPasswordPage link={initialResetLink} onLogin={() => setPage('login')} />;
+  if (page === 'forgot') return <ForgotPasswordPage onLogin={() => setPage('login')} />;
   if (auth.loading) return <main className="auth-page"><p className="status" role="status">Giriş yoxlanır…</p></main>;
   if (auth.error) return <main className="auth-page"><div className="auth-card">
     <p className="auth-error" role="alert">{auth.error}</p>
@@ -107,5 +113,5 @@ export default function App() {
   </div></main>;
   if (auth.user) return <Matchday />;
   return page === 'register' ? <RegisterPage onLogin={() => setPage('login')} /> :
-    <LoginPage onRegister={() => setPage('register')} />;
+    <LoginPage onRegister={() => setPage('register')} onForgotPassword={() => setPage('forgot')} />;
 }

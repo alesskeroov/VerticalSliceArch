@@ -2,8 +2,8 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
-type Props = { onRegister: () => void };
-export default function LoginPage({ onRegister }: Props) {
+type Props = { onRegister: () => void; onForgotPassword: () => void };
+export default function LoginPage({ onRegister, onForgotPassword }: Props) {
   const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +36,7 @@ export default function LoginPage({ onRegister }: Props) {
         {error && <p className="auth-error" role="alert">{error}</p>}
         <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'Giriş edilir…' : 'Daxil ol'}</button>
       </form>
+      <p className="auth-switch"><button type="button" disabled={busy} onClick={onForgotPassword}>Şifrəmi unutdum?</button></p>
       <p className="auth-switch">Hesabın yoxdur? <button type="button" disabled={busy} onClick={onRegister}>Qeydiyyatdan keç</button></p>
     </section>
   </main>;
