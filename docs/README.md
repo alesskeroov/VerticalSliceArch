@@ -7,7 +7,7 @@
 
 | Tapşırıq | Status | Mərhələ |
 |---|---|---|
-| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Diaqnostika bitib; yeni promptun icazəsi ilə real implementasiya davam edir |
+| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Real implementasiya davam edir; son “test etmə” göstərişinə görə yekun test/verifikasiya aparılmır |
 
 ## Qərarlar və araşdırmalar
 

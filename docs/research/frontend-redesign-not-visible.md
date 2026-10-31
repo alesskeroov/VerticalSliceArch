@@ -66,23 +66,27 @@ Tailwind v4 planında Vite plugin, CSS importu və source aşkarlanması yoxlana
 
 ## 6. Build və runtime xəta yoxlaması
 
-İlkin root `npm run build` uğurla tamamlanıb; Soprano xəta/xəbərdarlıq olmadığını qeyd edib. Bu yalnız köhnə baseline-ın build olunduğunu göstərir, redesign kodunun mövcudluğunu sübut etmir. İlkin diaqnostika anında yeni dizayn üçün browser console yoxlaması hələ edilməmişdi; “console tam təmizdir” iddiası yoxdur.
+İlkin root `npm run build` uğurla tamamlanıb; Soprano xəta/xəbərdarlıq olmadığını qeyd edib. Bu yalnız köhnə baseline-ın build olunduğunu göstərir, redesign kodunun mövcudluğunu sübut etmir. İlkin diaqnostika anında browser console yoxlaması hələ edilməmişdi. Sonrakı baseline yoxlamada Soprano IAB ilə `http://localhost:5173` login ekranını və error/warn loglarını yoxlayıb: köhnə Göstər mətni və qısa password input görünür, həmin login load üçün log siyahısı boşdur (`[]`). Bu yalnız köhnə login baseline-ının console nəticəsidir; protected dashboard və yeni UI üçün yoxlama deyil.
 
-Əvvəlki audit baseline yoxlamaları `npm run lint` və `npm run build` exit 0, `npm test` 12/12 idi. Yeni kodun final lint/build/test və real `5173` UI nəticələri Jane/Soprano təsdiqindən sonra aşağıda əlavə ediləcək.
+Əvvəlki audit baseline yoxlamaları `npm run lint` və `npm run build` exit 0, `npm test` 12/12 idi. Sonrakı “test etmə” göstərişi səbəbindən yeni kod üçün əlavə final lint/build/test və browser verifikasiyası aparılmayacaq. Əvvəlki baseline nəticələri yeni dizaynın yoxlandığına dəlil deyil.
 
 ## Səbəb və icazəli düzəliş
 
 **Səbəb:** əvvəlki mərhələdə yalnız plan/docs hazırlanmışdı, root frontend-ə redesign mənbə kodu və asılılıqları tətbiq edilməmişdi. Hard refresh bu vəziyyəti dəyişmir.
 
-**Düzəliş:** Jane eyni frontend branch-ində qəbul edilmiş futbol dizaynını implementasiya edir. Soprano yalnız frontend dəyişikliklərini review branch-ə keçirir, paketləri bərpa edir və root `frontend`-dən təqdim edilən `5173` UI-ını yoxlayır. Watson docs commitlərini root review branch-ə review-dan sonra daxil etmək üçün təqdim edir; sənədlər yalnız gizli worktree-də qalmamalıdır. Mövcud auth, root `docs/06-authentication.md` və backend qorunur.
+**Düzəliş:** Jane eyni frontend branch-ində qəbul edilmiş futbol dizaynını implementasiya edir. Soprano yalnız frontend dəyişikliklərini review branch-ə keçirir, paketləri bərpa edir və root `frontend`-dən təqdim edilən `5173` UI-ını yoxlayır. Watson-un ilkin docs commitləri Soprano review-dan sonra root review branch-ə `af33342`, `0319683`, `c290d3e` commitləri kimi daxil edilib; plan və diaqnostika artıq root `docs/` altında mövcuddur. Yekun nəticə əlavələri ayrıca keçiriləcək. Mövcud auth, root `docs/06-authentication.md` və backend qorunur.
 
-## Yekun nəticələr — təsdiq gözləyən faktlar
+## Son istifadəçi göstərişi və yekun yoxlama sərhədi
+
+İstifadəçi “test etmə” deyib. Bu göstərişdən sonra əlavə lint/build/test və browser verifikasiyası dayandırılır; implementasiya, paketlərin bərpası və zəruri frontend server açılışı davam edir. Normal “Bitdi” test meyarına açıq istifadəçi istisnası qeydə alınır. Root source/commit/package/server faktları qeyd ediləcək, amma yeni UI işləkliyinin yoxlandığı iddia olunmayacaq.
+
+## Yekun nəticələr — inteqrasiya faktları gözlənilir
 
 - [ ] Redesign mənbə kodu Jane branch-ində commit edilib və Soprano review edib.
 - [ ] Yalnız frontend + əlaqəli docs dəyişiklikləri root review branch-ə daxil edilib.
 - [ ] Yeni paketlər, Tailwind plugin/CSS/source və Motion/Lucide importları root frontend-də yoxlanıb.
-- [ ] Yekun `npm run lint`, `npm run build`, `npm test` nəticələri yazılıb.
-- [ ] Root `localhost:5173` yeni login/dashboard UI-ı göstərir; console/runtime yoxlamasının əhatəsi qeyd edilib.
+- [ ] Yekun lint/build/test: **aparılmır — istifadəçinin “test etmə” göstərişi**; redesign üçün uğurlu test nəticəsi iddiası yoxdur.
+- [ ] Root `localhost:5173` serverinin yeni mənbə ilə işə salınması qeyd edilib; yeni login/dashboard və console/browser verifikasiyası istifadəçi göstərişi ilə aparılmır.
 - [ ] Backend/API/auth axınları qorunub, no-delete/no-reset/no-push tələbi saxlanıb.
 
 PR hələ açılmayıb və push edilməyib. Bu mərhələdə tapşırıq “Tamamlandı” deyil; tətbiq və verifikasiya davam edir.

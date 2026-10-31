@@ -126,10 +126,14 @@ Köhnə docs/01, docs/02 və docs/03-də localStorage, revocation olmaması, tes
 
 İstifadəçinin tələb etdiyi 6 bənd üzrə faktlar [redesign görünmür diaqnostikasında](../research/frontend-redesign-not-visible.md) qeyd olunub. İlkin səbəb cache deyil: əvvəlki mərhələlərdə yalnız docs yazılmışdı, frontend redesign mənbə kodu/dependency inteqrasiyası edilməmişdi. Hard refresh mövcud olmayan kodu göstərə bilməz.
 
+## Son istifadəçi göstərişi: test etmə
+
+İstifadəçi implementasiya davam edərkən “test etmə” göstərişi verib. Bu göstərişdən sonra əlavə lint/build/test və browser verifikasiyası aparılmır. Əvvəlki baseline build/lint/12 test və login console nəticələri tarixidir, yeni redesign üçün yekun yoxlama kimi təqdim edilmir. Implementasiya və zəruri paket bərpası/dev-server açılışı davam edə bilər; bunlar test nəticəsi sayılmır. AGENTS.md-dəki normal test meyarından bu tapşırıq üçün istifadəçinin açıq göstərişi ilə istisna edilir. Yekun hesabatda test edilmədiyi, PR/push vəziyyəti və yoxlanmamış hissələr açıq qalacaq; “Bitdi” və “testlər keçir” iddiası yoxdur.
+
 ## Yoxlamalar və nəticə
 
 Bu yenilənmiş audit mərhələsində Soprano cari frontend baseline-ında `npm run lint` — exit 0, `npm run build` — exit 0 (TypeScript strict + Vite 7.3.7), `npm test` — 12/12, exit 0 nəticələrini yenidən təsdiqləyib. Bunlar redesign sonrası nəticə deyil. Repodakı tarixi login/dashboard screenshot-ları bu mərhələdə Soprano tərəfindən vizual yoxlanıb; yeni attachment kimi təqdim edilmir. Kod/dependency dəyişdirilməyib.
 
-Tapşırıq “Tamamlandı” deyil. Yeni prompt əsasında real implementasiya başlanıb; test, vizual yoxlama, root/frontend inteqrasiyası və sənədləşdirilmiş nəticələr gözlənilir. PR/no-push vəziyyəti ayrıca göstərilir.
+Tapşırıq “Tamamlandı” deyil. Yeni prompt əsasında real implementasiya başlanıb; root/frontend inteqrasiyası və sənədləşdirilmiş nəticə gözlənilir. İstifadəçinin “test etmə” göstərişinə görə yekun test/vizual verifikasiya aparılmayacaq və bu məhdudiyyət qeyd olunacaq. PR/no-push vəziyyəti ayrıca göstərilir.
 
 İmza: **Watson**
