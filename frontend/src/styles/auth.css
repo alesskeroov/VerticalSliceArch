@@ -23,3 +23,5 @@
 .account-controls button { padding: var(--space-2); font-size: var(--footnote); }
 .account-name { max-width: 6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: var(--footnote); }
 @media (max-width: 400px) { .auth-page { padding-inline: var(--space-4); } .auth-card { padding: var(--space-5); } .account-name { max-width: 5rem; } }
+
+.auth-success { padding: var(--space-3); border-radius: var(--radius-control); background: var(--fill); color: var(--label); font-size: var(--subheadline); overflow-wrap: anywhere; }

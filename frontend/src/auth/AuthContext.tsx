@@ -7,7 +7,7 @@ import { clearSession, getExpiry, getStoredToken, saveToken, UNAUTHORIZED_EVENT 
 type AuthState = {
   user: AuthUser | null; token: string | null; loading: boolean; error: string;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string) => Promise<void>;
+  register: (email: string, password: string, displayName: string, confirmPassword: string) => Promise<void>;
   logout: () => void;
 };
 const AuthContext = createContext<AuthState | null>(null);
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
     // Token dəyişəndə sessiya yoxlanır; login cavabı artıq user veribsə əlavə sorğu lazım deyil.
-  }, [token]);
+  }, [token, user]);
   useEffect(() => {
     if (!token) return;
     const timer = window.setTimeout(clearSession, Math.max(0, getExpiry(token) - Date.now()));
@@ -41,11 +41,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveToken(result.token); setToken(result.token); setUser(result.user); setError(''); setLoading(false);
   }
   async function login(email: string, password: string) { saveSession(await api.login(email, password)); }
-  async function register(email: string, password: string, displayName: string) {
-    await api.register(email, password, displayName);
+  async function register(email: string, password: string, displayName: string, confirmPassword: string) {
+    await api.register(email, password, displayName, confirmPassword);
     await login(email, password);
   }
-  return <AuthContext.Provider value={{ user, token, loading, error, login, register, logout: clearSession }}>
+  function logout() {
+    const currentToken = token;
+    clearSession();
+    if (currentToken) void api.logout(currentToken).catch(() => { /* Local logout still completes offline. */ });
+  }
+  return <AuthContext.Provider value={{ user, token, loading, error, login, register, logout }}>
     {children}
   </AuthContext.Provider>;
 }

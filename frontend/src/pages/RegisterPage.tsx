@@ -8,12 +8,15 @@ export default function RegisterPage({ onLogin }: Props) {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   async function submit(event: FormEvent) {
-    event.preventDefault(); setBusy(true); setError('');
-    try { await auth.register(email, password, displayName); }
+    event.preventDefault(); setError('');
+    if (password !== confirmPassword) { setError('Parollar uyğun gəlmir.'); return; }
+    setBusy(true);
+    try { await auth.register(email, password, displayName, confirmPassword); }
     catch (err) { setError(err instanceof Error ? err.message : 'Qeydiyyat alınmadı.'); }
     finally { setBusy(false); }
   }
@@ -32,11 +35,14 @@ export default function RegisterPage({ onLogin }: Props) {
         <label htmlFor="register-password">Parol</label>
         <div className="password-field">
           <input id="register-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password"
-            required minLength={8} value={password} onChange={e => setPassword(e.target.value)} disabled={busy} />
+            required minLength={8} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} disabled={busy} />
           <button type="button" aria-label={showPassword ? 'Parolu gizlət' : 'Parolu göstər'}
             aria-pressed={showPassword} disabled={busy} onClick={() => setShowPassword(!showPassword)}>
             {showPassword ? 'Gizlət' : 'Göstər'}</button>
         </div>
+        <label htmlFor="register-confirm">Parolun təkrarı</label>
+        <input id="register-confirm" type="password" autoComplete="new-password" required minLength={8} maxLength={128}
+          value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={busy} />
         <span className="auth-hint">Ən azı 8 simvol.</span>
         {error && <p className="auth-error" role="alert">{error}</p>}
         <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'Hesab yaradılır…' : 'Qeydiyyatdan keç'}</button>
