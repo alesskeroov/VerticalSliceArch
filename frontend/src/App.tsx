@@ -9,8 +9,12 @@ import SeasonProgress from './components/SeasonProgress';
 import GoalBurst from './components/GoalBurst';
 import { TrophyIcon } from './components/icons';
 import './App.css';
+import { useAuth } from './auth/AuthContext';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
-export default function App() {
+function Matchday() {
+  const { user, logout } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<TodoFilter>('all');
   const [loading, setLoading] = useState(true);
@@ -53,7 +57,11 @@ export default function App() {
     <main className="page">
       <header className={`navigation ${scrolled ? 'is-scrolled' : ''}`}>
         <h1 id="page-title">MATCHDAY</h1>
-        <span className="compact-score" aria-hidden="true">{completed} : {remaining}</span>
+        <div className="auth-navigation">
+          <span className="compact-score" aria-hidden="true">{completed} : {remaining}</span>
+          <div className="account-controls"><span className="account-name" title={user?.displayName}>{user?.displayName}</span>
+            <button type="button" onClick={logout}>Çıxış</button></div>
+        </div>
       </header>
       <section className="content" aria-labelledby="page-title">
         <div className="scoreboard-wrap">
@@ -84,4 +92,20 @@ export default function App() {
       </section>
     </main>
   );
+}
+
+// Şərtli render üçün router lazım deyil; çıxışda əvvəlki istifadəçinin ekranı tam bağlanır.
+export default function App() {
+  const auth = useAuth();
+  const [page, setPage] = useState<'login' | 'register'>('login');
+  useEffect(() => { if (!auth.user) setPage('login'); }, [auth.user]);
+  if (auth.loading) return <main className="auth-page"><p className="status" role="status">Giriş yoxlanır…</p></main>;
+  if (auth.error) return <main className="auth-page"><div className="auth-card">
+    <p className="auth-error" role="alert">{auth.error}</p>
+    <button type="button" onClick={() => window.location.reload()}>Yenidən cəhd et</button>
+    <button type="button" onClick={auth.logout}>Daxil ol</button>
+  </div></main>;
+  if (auth.user) return <Matchday />;
+  return page === 'register' ? <RegisterPage onLogin={() => setPage('login')} /> :
+    <LoginPage onRegister={() => setPage('register')} />;
 }

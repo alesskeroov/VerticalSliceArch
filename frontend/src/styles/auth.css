@@ -1,0 +1,25 @@
+/* Yalnız yeni giriş ekranları və hesab idarələri; mövcud Matchday stilləri dəyişmir. */
+.auth-page { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; max-width: 30rem; margin: 0 auto; padding: var(--space-6) var(--space-5); }
+.auth-brand { margin-bottom: var(--space-6); }
+.auth-card { padding: var(--space-6); background: var(--surface); border-radius: var(--radius-card); }
+.auth-card h2 { font-size: var(--title-2); margin: 0 0 var(--space-2); }
+.auth-description { color: var(--text-secondary); font-size: var(--subheadline); margin: 0 0 var(--space-6); }
+.auth-form { display: flex; flex-direction: column; gap: var(--space-2); }
+.auth-form label { font-size: var(--subheadline); font-weight: 600; }
+.auth-form > input, .password-field { margin-bottom: var(--space-3); }
+.auth-form input { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-3); border: 1px solid var(--separator); border-radius: var(--radius-control); background: var(--fill); }
+.password-field { display: flex; align-items: center; gap: var(--space-1); }
+.password-field input { flex: 1; }
+.password-field button { padding: var(--space-2); font-size: var(--footnote); }
+.auth-submit { background: var(--pitch); color: var(--bg); border-radius: var(--radius-control); padding: var(--space-3); font-weight: 600; margin-top: var(--space-2); }
+.auth-switch { display: flex; align-items: center; flex-wrap: wrap; margin: var(--space-4) 0 0; font-size: var(--subheadline); }
+.auth-switch button { padding: var(--space-2); }
+.auth-error { padding: var(--space-3); border-radius: var(--radius-control); background: var(--danger-background); color: var(--danger-text); font-size: var(--subheadline); margin: 0; }
+.auth-hint { color: var(--text-secondary); font-size: var(--footnote); }
+.auth-navigation { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; }
+.auth-navigation .compact-score { display: none; }
+.is-scrolled .auth-navigation .compact-score { display: block; }
+.account-controls { display: flex; align-items: center; gap: var(--space-1); min-width: 0; }
+.account-controls button { padding: var(--space-2); font-size: var(--footnote); }
+.account-name { max-width: 6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: var(--footnote); }
+@media (max-width: 400px) { .auth-page { padding-inline: var(--space-4); } .auth-card { padding: var(--space-5); } .account-name { max-width: 5rem; } }

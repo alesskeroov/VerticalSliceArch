@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TodoApi.Common;
 
 namespace TodoApi.Features.Todos.DeleteTodo;
@@ -11,9 +13,9 @@ public static class DeleteTodo
         private readonly AppDbContext database;
         public Handler(AppDbContext database) { this.database = database; }
 
-        public async Task<IResult> Handle(Request request)
+        public async Task<IResult> Handle(Guid userId, Request request)
         {
-            var todo = await database.Todos.FindAsync(request.Id);
+            var todo = await database.Todos.SingleOrDefaultAsync(todo => todo.Id == request.Id && todo.UserId == userId);
             if (todo is null) return Results.NotFound("Tapşırıq tapılmadı.");
             database.Todos.Remove(todo);
             await database.SaveChangesAsync();
@@ -24,7 +26,7 @@ public static class DeleteTodo
 
     public static void MapEndpoint(WebApplication app)
     {
-        app.MapDelete("/api/todos/{id:guid}", (Guid id, Handler handler) =>
-            handler.Handle(new Request(id))).WithTags("Tapşırıqlar");
+        app.MapDelete("/api/todos/{id:guid}", (Guid id, ClaimsPrincipal user, Handler handler) =>
+            handler.Handle(user.GetUserId(), new Request(id))).RequireAuthorization().WithTags("Tapşırıqlar");
     }
 }

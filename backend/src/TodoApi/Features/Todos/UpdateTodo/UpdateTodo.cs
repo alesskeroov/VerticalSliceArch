@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TodoApi.Common;
 
 namespace TodoApi.Features.Todos.UpdateTodo;
@@ -11,9 +13,9 @@ public static class UpdateTodo
         private readonly AppDbContext database;
         public Handler(AppDbContext database) { this.database = database; }
 
-        public async Task<IResult> Handle(Guid id, Request request)
+        public async Task<IResult> Handle(Guid userId, Guid id, Request request)
         {
-            var todo = await database.Todos.FindAsync(id);
+            var todo = await database.Todos.SingleOrDefaultAsync(todo => todo.Id == id && todo.UserId == userId);
             if (todo is null) return Results.NotFound("Tapşırıq tapılmadı.");
             // POST ilə eyni qayda saxlanır; əlavə validator kitabxanası yoxdur.
             if (string.IsNullOrWhiteSpace(request.Title) || request.Title.Length > 200)
@@ -27,7 +29,7 @@ public static class UpdateTodo
     public static void MapEndpoint(WebApplication app)
     {
         // Başlıq dəyişir; tamamlanma vəziyyəti ayrı feature-in məsuliyyətidir.
-        app.MapPut("/api/todos/{id:guid}", (Guid id, Request request, Handler handler) =>
-            handler.Handle(id, request)).WithTags("Tapşırıqlar");
+        app.MapPut("/api/todos/{id:guid}", (Guid id, Request request, ClaimsPrincipal user, Handler handler) =>
+            handler.Handle(user.GetUserId(), id, request)).RequireAuthorization().WithTags("Tapşırıqlar");
     }
 }

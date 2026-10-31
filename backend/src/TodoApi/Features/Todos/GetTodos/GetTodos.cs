@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Common;
 
@@ -13,13 +14,13 @@ public static class GetTodos
         private readonly AppDbContext database;
         public Handler(AppDbContext database) { this.database = database; }
 
-        public async Task<IResult> Handle(Request request)
+        public async Task<IResult> Handle(Guid userId, Request request)
         {
             var filter = request.Filter ?? "all";
             if (filter != "all" && filter != "active" && filter != "completed")
                 return Results.BadRequest("Filtr all, active və ya completed olmalıdır.");
             // Oxunan obyektləri izləməyə ehtiyac yoxdur; yalnız JSON qaytarırıq.
-            var query = database.Todos.AsNoTracking();
+            var query = database.Todos.AsNoTracking().Where(todo => todo.UserId == userId);
             if (filter == "active") query = query.Where(todo => !todo.IsCompleted);
             if (filter == "completed") query = query.Where(todo => todo.IsCompleted);
             var todos = await query.OrderByDescending(todo => todo.CreatedAt).ToListAsync();
@@ -30,7 +31,7 @@ public static class GetTodos
     public static void MapEndpoint(WebApplication app)
     {
         // Filtr URL parametrindən alınır; GET üçün sorğu gövdəsi tələb edilmir.
-        app.MapGet("/api/todos", (string? filter, Handler handler) =>
-            handler.Handle(new Request(filter))).WithTags("Tapşırıqlar");
+        app.MapGet("/api/todos", (string? filter, ClaimsPrincipal user, Handler handler) =>
+            handler.Handle(user.GetUserId(), new Request(filter))).RequireAuthorization().WithTags("Tapşırıqlar");
     }
 }

@@ -16,6 +16,7 @@ public static class CleanupCompletedTodos
         public async Task Handle()
         {
             var cutoff = DateTime.UtcNow.AddDays(-7);
+            // Sistem job-u bütün istifadəçilər üçün işləyir; HTTP istifadəçi filtri burada yoxdur.
             // Tamamlanma tarixinə baxırıq, yaradılma tarixinə deyil.
             var deletedCount = await database.Todos
                 .Where(todo => todo.IsCompleted && todo.CompletedAt < cutoff)

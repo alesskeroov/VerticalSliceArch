@@ -1,29 +1,58 @@
 @baseUrl = http://localhost:5000
+@token =
+@password =
+@email = learner@example.com
+
 @todoId = 00000000-0000-0000-0000-000000000000
 
 ### Yeni tapşırıq yarat, cavabdakı id-ni yuxarıya köçür.
 POST {{baseUrl}}/api/todos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {"title":"Vertical Slice öyrən"}
 
 ### Filtr: all, active və ya completed.
 GET {{baseUrl}}/api/todos?filter=all
+Authorization: Bearer {{token}}
 
 ### Başlığı dəyiş.
 PUT {{baseUrl}}/api/todos/{{todoId}}
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {"title":"Hangfire öyrən"}
 
 ### Tamamla və ya aktiv et.
 PATCH {{baseUrl}}/api/todos/{{todoId}}/toggle
+Authorization: Bearer {{token}}
 
 ### Tapşırığı sil.
 DELETE {{baseUrl}}/api/todos/{{todoId}}
+Authorization: Bearer {{token}}
 
 ### Boş başlıq üçün 400 gözlənilir.
 POST {{baseUrl}}/api/todos
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {"title":""}
+
+### Əvvəl parolu yerli olaraq təyin edin; real parol/token ilə faylı commit etməyin.
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{"email":"{{email}}","password":"{{password}}","displayName":"Öyrənən"}
+
+### Login cavabındakı tokeni yuxarıdakı boş token dəyişəninə köçürün.
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{"email":"{{email}}","password":"{{password}}"}
+
+### Cari istifadəçi; hash cavabda yoxdur.
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Tokensiz sorğu 401 qaytarmalıdır.
+GET {{baseUrl}}/api/todos

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Hangfire;
 using TodoApi.Common;
 using TodoApi.Features.Jobs.TodoCreatedNotification;
@@ -18,14 +19,14 @@ public static class CreateTodo
             this.backgroundJobs = backgroundJobs;
         }
 
-        public async Task<IResult> Handle(Request request)
+        public async Task<IResult> Handle(Guid userId, Request request)
         {
             // Kitabxanasız yoxlama kiçik demoda qaydanı görməyi asanlaşdırır.
             if (string.IsNullOrWhiteSpace(request.Title) || request.Title.Length > 200)
                 return Results.BadRequest("Başlıq boş ola bilməz və 200 simvoldan uzun olmamalıdır.");
             var todo = new Todo
             {
-                Id = Guid.NewGuid(), Title = request.Title.Trim(), CreatedAt = DateTime.UtcNow
+                Id = Guid.NewGuid(), UserId = userId, Title = request.Title.Trim(), CreatedAt = DateTime.UtcNow
             };
             database.Todos.Add(todo);
             // Əvvəl bazaya yazırıq ki, job ID ilə mövcud tapşırığı tapa bilsin.
@@ -39,7 +40,7 @@ public static class CreateTodo
 
     public static void MapEndpoint(WebApplication app)
     {
-        app.MapPost("/api/todos", (Request request, Handler handler) =>
-            handler.Handle(request)).WithTags("Tapşırıqlar");
+        app.MapPost("/api/todos", (Request request, ClaimsPrincipal user, Handler handler) =>
+            handler.Handle(user.GetUserId(), request)).RequireAuthorization().WithTags("Tapşırıqlar");
     }
 }

@@ -1,3 +1,4 @@
+import { clearSession, getStoredToken } from '../auth/tokenStorage';
 import type { Todo, TodoFilter } from '../types/todo';
 
 // Ünvanı koddan ayırırıq ki, fərqli mühitlərdə yalnız .env dəyişsin.
@@ -6,7 +7,12 @@ const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replac
 async function send(path: string, options?: RequestInit) {
   let response: Response;
   try {
-    response = await fetch(`${baseUrl}/api/todos${path}`, options);
+    const token = getStoredToken();
+    const headers = new Headers(options?.headers);
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    response = await fetch(`${baseUrl}/api/todos${path}`, { ...options, headers });
+    // Köhnə sorğunun 401-i daha yeni giriş sessiyasını silməsin.
+    if (response.status === 401 && getStoredToken() === token) clearSession();
   } catch {
     throw new Error('Serverə qoşulmaq olmadı. Backend-in işlədiyini yoxlayın.');
   }

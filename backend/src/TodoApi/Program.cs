@@ -1,3 +1,6 @@
+using TodoApi.Features.Auth.Register;
+using TodoApi.Features.Auth.Login;
+using TodoApi.Features.Auth.Me;
 using Hangfire;
 using Hangfire.InMemory;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +14,23 @@ using TodoApi.Features.Todos.UpdateTodo;
 using TodoApi.Features.Jobs.CleanupCompletedTodos;
 using TodoApi.Features.Jobs.TodoCreatedNotification;
 
-var builder = WebApplication.CreateBuilder(args);
+// Visual Studio fərqli iş qovluğu seçsə də, appsettings çıxış qovluğundan oxunsun.
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args, ContentRootPath = AppContext.BaseDirectory
+});
+if (builder.Environment.IsDevelopment())
+{
+    // Development sirri açıq yüklənir; mühit və əmr sətri ayarlarının üstünlüyü qorunur.
+    builder.Configuration.AddUserSecrets<JwtSettings>(optional: true)
+        .AddEnvironmentVariables().AddCommandLine(args);
+}
 // Windows Authentication istifadə olunur; kodda parol saxlanmır.
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("TodoDatabase")));
 // Handler qeydiyyatları Composition qovluğunda açıq şəkildə saxlanır.
 builder.Services.AddTodoFeatures();
+builder.Services.AddTodoAuthentication(builder.Configuration);
 builder.Services.AddHangfire(config => config.UseInMemoryStorage());
 builder.Services.AddHangfireServer();
 // Origin ayardan gəlir; yalnız frontend ünvanına icazə verilir.
@@ -37,12 +51,18 @@ using (var scope = app.Services.CreateScope())
     await database.Database.MigrateAsync();
 }
 app.UseCors();
+// Əvvəl kimlik yoxlanır, sonra həmin kimliyin giriş icazəsi qiymətləndirilir.
+app.UseAuthentication();
+app.UseAuthorization();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseHangfireDashboard("/hangfire");
 }
+Register.MapEndpoint(app);
+Login.MapEndpoint(app);
+Me.MapEndpoint(app);
 GetTodos.MapEndpoint(app);
 CreateTodo.MapEndpoint(app);
 UpdateTodo.MapEndpoint(app);

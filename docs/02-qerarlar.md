@@ -18,7 +18,7 @@ Bu qısa ADR-lər seçilən həlləri və onların məhdudiyyətlərini qeyd edi
 
 ## Kodda harada görünür?
 
-`backend/src/TodoApi/Program.cs` DI qeydiyyatlarını, SQL Server qoşulmasını, migration tətbiqini və Development şərtini saxlayır.
+`backend/src/TodoApi/Composition/ServiceRegistration.cs` handler-ləri, `AuthenticationRegistration.cs` JWT və giriş handler-lərini qeyd edir. `backend/src/TodoApi/Program.cs` bu extension metodlarını çağırır və SQL Server qoşulmasını, migration tətbiqini və Development şərtini saxlayır.
 `backend/src/TodoApi/Common/AppDbContext.cs` model qaydasını, `Migrations` qovluğu sxem tarixçəsini saxlayır.
 `backend/src/TodoApi/Features/Todos/CreateTodo/CreateTodo.cs` əvvəl bazaya yazır, sonra Enqueue edir.
 `frontend/src/App.tsx` bütün todo-ları saxlayıb görünən siyahını filtrdən hesablayır.
@@ -38,3 +38,16 @@ Bu qısa ADR-lər seçilən həlləri və onların məhdudiyyətlərini qeyd edi
 - **Alternativ:** Əvvəlki neytral sistem dizaynı və ya tam oyun üslubu saxlanıla bilərdi.
 - **Nəticə:** Enerjili görünüşlə sadə siyahı quruluşu birlikdə qalır. Klub/liqaya aid loqo yoxdur: tətbiq müstəqildir və real futbol brendi kimi təqdim edilmir.
 - **Sərhəd:** Həftəlik hədəf frontend-də, yerli bazar ertəsi sərhədi və completedAt əsasında hesablanır. Silinmiş tapşırıqlar üçün ayrıca tarixçə və yeni endpoint yaradılmır.
+
+## Giriş qərarları
+
+| Qərar | Səbəb | Alternativlər | Nəticə |
+| --- | --- | --- | --- |
+| Tam Identity əvəzinə sadə JWT | Token yaradılması və yoxlanması görünsün | ASP.NET Core Identity, xarici identity provider | Tədris sadədir; parol bərpası, rollar və refresh token hazır deyil. |
+| PBKDF2-SHA256, 600000 iterasiya və təsadüfi salt | .NET-də hazırdır; parolun düz mətn saxlanması sızmada birbaşa zərər verər | BCrypt, Argon2 | Əlavə paket yoxdur; hash yavaşdır və hər parol üçün fərqlidir. FixedTimeEquals müqayisə edilir. |
+| Token localStorage-də | Yenilənmədə sessiya bərpa olunur | httpOnly cookie | İstifadəsi sadədir; XSS tokeni oxuya bilər. Serverdə çıxış/revocation yoxdur. |
+| JWT sirri user-secrets-də | Mənbə kodu və Git tarixçəsinə düşməsin | Mühit dəyişəni, secret manager | Repoda yalnız boş placeholder var; hər yeni mühitdə ayrıca sirr təyin edilməlidir. |
+| Başqasının todo-su üçün 404 | Məlumatın mövcudluğunu bildirməmək | 403 Forbidden | İstifadəçi tapılmayan və başqasına aid ID-ni ayıra bilmir; sahiblik DB sorğusunda yoxlanır. |
+| Legacy Todo.UserId nullable | Mövcud sahibsiz məlumatı silməmək | Köhnə todo-ları silmək və məcburi sahiblik | Köhnə sətirlər heç bir hesaba görünmür. API yeni todo-da sahib təyin edir; nullable yalnız keçid üçündür. |
+
+JWT HS256 ilə imzalanır və 60 dəqiqə yaşayır. `Common/JwtTokenService.cs` yaradır, `Composition/AuthenticationRegistration.cs` doğrulayır; qısa yollar `backend/src/TodoApi/`-ə nəzərəndir.

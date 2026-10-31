@@ -452,3 +452,6 @@ appsettings.Local.json
 .DS_Store
 # Müvəqqəti yoxlama vasitələri repozitoriyaya daxil edilmir.
 .qa/
+
+# Development sirrləri yalnız yerli faylda qala bilər.
+appsettings.Development.json

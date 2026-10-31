@@ -9,10 +9,15 @@ React interfeysi və .NET backend-i eyni repozitoriyadadır. Layihə Vertical Sl
 ![Hangfire](https://img.shields.io/badge/Hangfire-1.8-C33)
 ![SQL Server](https://img.shields.io/badge/SQL_Server-Code_First-CC2927)
 
+## Bu sənəd nə üçündür?
+
+Bu sənəd Matchday tətbiqini işə salmaq və əsas sorğu axınını öyrənmək üçündür. Kodun xəritəsi və detallı qərarlar docs qovluğundadır.
+
 ## Xüsusiyyətlər
 
+- JWT ilə qeydiyyat/giriş, səhifə yenilənəndə sessiyanın bərpası və hər istifadəçiyə ayrıca tapşırıqlar.
 - Tapşırıq yaratmaq, başlığını dəyişmək, tamamlamaq, geri aktiv etmək və silmək.
-- Hamısı / Aktiv / Tamamlanmış filtrləri və qalan aktiv tapşırıqların sayı.
+- Hamısı / Meydanda / Qol filtrləri və qalan aktiv tapşırıqların sayı.
 - Azərbaycan dilində mobil uyğun interfeys, yüklənmə, boş siyahı və xəta vəziyyətləri.
 - Başlıq üçün boş olmama və maksimum 200 simvol qaydası.
 - SQL Server və EF Core Code First migration-ları ilə daimi məlumat.
@@ -33,15 +38,18 @@ backend/
   .config/dotnet-tools.json
   requests.http
   src/TodoApi/
-    Common/             # Todo və AppDbContext
+    Common/             # Todo, User, AppDbContext, parol və JWT xidmətləri
     Composition/        # AddTodoFeatures ilə handler qeydiyyatları
+    Features/Auth/      # Register, Login, Me
     Features/Todos/     # Get, Create, Update, Toggle, Delete
     Features/Jobs/      # Bildiriş və təmizləmə
     Migrations/         # Code First baza dəyişiklikləri
     Program.cs          # Qoşulmalar və job planı
 frontend/
   .env.example
-  src/api/              # fetch sorğuları
+  src/api/              # todoApi.ts və authApi.ts
+  src/auth/             # AuthContext.tsx və tokenStorage.ts
+  src/pages/            # LoginPage.tsx və RegisterPage.tsx
   src/components/       # Forma, siyahı, element və filtrlər
   src/types/            # Todo və TodoFilter
   src/App.tsx
@@ -67,7 +75,7 @@ Bu ayar yalnız yerli inkişaf üçündür. TrustServerCertificate yerli sertifi
 İşlədən Windows istifadəçisinin serverdə giriş və ilk açılışda baza yaratmaq icazəsi olmalıdır.
 Başqa server üçün həmin ayarı dəyişin və ya `ConnectionStrings__TodoDatabase` mühit dəyişənini verin. Parolu Git-ə yazmayın.
 
-Kök qovluqda:
+Əvvəl aşağıdakı **Autentifikasiya** bölməsinə uyğun JWT sirrini təyin edin. Sonra kök qovluqda:
 
 ```sh
 dotnet build backend/src/TodoApi/TodoApi.csproj
@@ -105,23 +113,74 @@ npm run dev
 İnterfeys: [localhost:5173](http://localhost:5173). Ünvan ayarını dəyişəndən sonra Vite-i yenidən başladın.
 Backend CORS origin-i appsettings.json-dakı `FrontendOrigin` dəyərindən oxuyur: `http://localhost:5173`.
 
+## Autentifikasiya
+
+Authentication istifadəçinin kimliyini, authorization isə icazəsini yoxlayır.
+Axın: register → login → JWT → `Authorization: Bearer <token>` ilə qorunan sorğu.
+Qeydiyyat səhifəsi register uğurlu olduqda özü login edir. Token HS256 ilə imzalanır, 60 dəqiqə yaşayır və sub, email, name claim-lərini daşıyır; claim imzalanmış istifadəçi məlumatıdır.
+
+Bir dəfə, repo kökündə **öz Windows PowerShell terminalınızda**, Visual Studio ilə eyni Windows hesabından işlədin. Aşağıdakı kod təsadüfi sirri yaradıb birbaşa user-secrets-ə yazır; dəyəri ekrana çıxarmır:
+
+```powershell
+$secretBytes = New-Object byte[] 48
+$generator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$generator.GetBytes($secretBytes)
+$generator.Dispose()
+$jwtSecret = [Convert]::ToBase64String($secretBytes)
+dotnet user-secrets set "Jwt:Secret" "$jwtSecret" --project backend/src/TodoApi
+dotnet user-secrets set "Jwt:Issuer" "Matchday" --project backend/src/TodoApi
+dotnet user-secrets set "Jwt:Audience" "MatchdayFrontend" --project backend/src/TodoApi
+dotnet user-secrets set "Jwt:ExpiryMinutes" "60" --project backend/src/TodoApi
+```
+
+Bu əmrlər repo kökündən işlədilməlidir. `TodoApi.csproj` daxilində `UserSecretsId=matchday-todoapi` var; yenidən init etmək lazım deyil. Vacib: agentin izolə edilmiş icra mühitində yaradılmış secret faylı Visual Studio-dan görünməyə bilər. Debugger-də SecretLength=0 və secret faylı üçün File.Exists=false çıxırsa, yuxarıdakı əmrləri öz terminalınızda icra edin; kod yoxlamasını zəiflətməyin.
+
+Sirrlər onları təyin edən Windows istifadəçisinə aiddir: Visual Studio da həmin hesabdan açılmalıdır. `dotnet user-secrets list` çıxışı sirri göstərə bilər; onu paylaşmayın.
+
+Visual Studio-da **http** açılış profilini seçin. Bu profil hər iki environment dəyişənini Development edir; appsettings çıxış qovluğundan, yerli sirr UserSecretsId əsasında oxunur. Ayarları dəyişəndə çalışan debug sessiyasını dayandırıb yenidən başladın.
+
+Secret repoda deyil; appsettings.json-da boş placeholder, Issuer, Audience və ExpiryMinutes var.
+Yeni backend asılılığı Microsoft.AspNetCore.Authentication.JwtBearer 8.0.22-dir; tam Identity paketi və frontend router kitabxanası əlavə edilməyib.
+Parollar PBKDF2-SHA256, 600000 iterasiya və hər parol üçün təsadüfi salt ilə saxlanır; hash cavabda və JWT-də yoxdur.
+
+**DB yenilənməsi:** bu layihə SQL Server istifadə edir, todo.db faylı yoxdur və fayl silmək lazım deyil.
+`AddAuthentication` migration-ı Users, unikal email indeksi və nullable Todo.UserId xarici açarını əlavə edir.
+Açılışda migration avtomatik tətbiq olunur. Əl ilə tətbiq etmək üçün backend qovluğunda:
+
+```sh
+dotnet tool restore
+dotnet ef database update --project src/TodoApi -- --environment Development
+```
+
+Köhnə todo-lar silinmir, amma sahibi məlum olmadığı üçün yeni istifadəçilərə göstərilmir; interfeysdə itmiş kimi görünə bilər. UserId null yalnız bu legacy qeydlər üçündür; yeni tapşırığın sahibi həmişə tokendən götürülür.
+Bazanın özünü silsəniz və ya dağıdıcı migration seçsəniz məlumat itə bilər; bu dəyişiklikdə belə əməliyyat yoxdur.
+
+Frontend tokeni localStorage-də saxlayır. Bu sadədir, amma XSS — səhifədə zərərli JavaScript işləməsi — tokeni oxuya bilər; real layihədə httpOnly cookie alternativini öyrənin.
+Səhifə yenilənəndə `/api/auth/me` sessiyanı yoxlayır; vaxt bitdikdə, çıxışda və todo sorğusuna 401 gəldikdə token silinir, giriş ekranı açılır.
+Çıxış tokeni serverdə ləğv etmir; artıq əldə edilmiş JWT müddəti bitənədək keçərlidir. Bu demo refresh token və revocation siyahısı saxlamır.
+Swagger Authorize düyməsinə yalnız tokeni yapışdırın; Bearer prefiksi avtomatik əlavə edilir.
+
 ## API endpoint-ləri
 
 | Metod | URL | Təsvir |
 | --- | --- | --- |
-| GET | /api/todos?filter=all | Bütün tapşırıqlar; active və completed də qəbul edilir. |
+| POST | /api/auth/register | Email, password, displayName ilə hesab yaradır; 201. |
+| POST | /api/auth/login | Email və password qarşılığında token və açıq istifadəçi məlumatı; 200. |
+| GET | /api/auth/me | Token sahibinin açıq məlumatı; Bearer tələb edir. |
+| GET | /api/todos?filter=all | Yalnız cari istifadəçinin tapşırıqları; active və completed də qəbul edilir. |
 | POST | /api/todos | JSON: {"title":"Kitab oxu"}; 201 qaytarır. |
 | PUT | /api/todos/{id} | JSON ilə yalnız başlığı yeniləyir; 200 qaytarır. |
 | PATCH | /api/todos/{id}/toggle | Tamamlanmanı dəyişir; 200 qaytarır. |
 | DELETE | /api/todos/{id} | Silir; 204 qaytarır. |
 
+Bütün `/api/todos` endpoint-ləri token tələb edir. Başqasının todo-su üçün 404, tokensiz sorğu üçün 401 qaytarılır.
 Boş və 200 simvoldan uzun başlıq üçün 400, tapılmayan düzgün Guid ID üçün 404 qaytarılır.
 Nümunə sorğular: [backend/requests.http](backend/requests.http).
 
 ## Hangfire dashboard
 
 Yalnız Development mühitində: [localhost:5000/hangfire](http://localhost:5000/hangfire).
-Xüsusi giriş nəzarəti yoxdur; bu, yerli demodur. Swagger də yalnız Development-də açılır.
+Dashboard üçün xüsusi giriş nəzarəti yoxdur; API-nin JWT qoruması dashboard-a tətbiq edilmir. Bu, yerli demodur. Swagger də yalnız Development-də açılır.
 Yeni tapşırıq işi yalnız ID alır və `Yeni tapşırıq yaradıldı: ...` yazır.
 `cleanup-completed-todos` hər saatın başlanğıcında, UTC cədvəli ilə planlanır; tamamlanma tarixi 7 gündən köhnə olan tapşırıqları silir. Tətbiq açıq olmalıdır; ilk işi dərhal gözləməyin.
 Hangfire.InMemory növbə və tarixçəni restart zamanı itirir. SQL Server-dəki todo-lar isə qalır.
@@ -136,8 +195,9 @@ npm ci
 npm run build
 ```
 
-Əl ilə ssenari: tapşırıq yaradın, redaktə edin, tamamlayın, filtrləri dəyişin, geri aktiv edin və silin.
+Əl ilə ssenari: qeydiyyatdan keçin, daxil olun, tapşırıq yaradın, redaktə edin, tamamlayın, filtrləri dəyişin, geri aktiv edin və silin.
 Səhifəni yeniləyəndə saxlanmış işlər qalmalıdır. Backend dayananda Azərbaycan dilində xəta mesajı görünməlidir.
+Çıxışdan sonra tokensiz GET /api/todos üçün 401 gözləyin. İkinci hesab birinci hesabın todo-larını görməməlidir.
 CI build yoxlayır; SQL Server tələb edən işləmə yoxlaması CI-a daxil deyil.
 
 ## Ekran görüntüsü
@@ -149,6 +209,7 @@ CI build yoxlayır; SQL Server tələb edən işləmə yoxlaması CI-a daxil dey
 Yeni ekran görüntüsü çəkərkən eyni görünüşü light və dark sistem rejimlərində saxlayın:
 `docs/screenshot-light.png` və `docs/screenshot-dark.png`.
 Hər rejimdə 375px mobil və 1280px desktop görünüşünü yoxlamaq tövsiyə olunur.
+Giriş ekranı: [screenshot-login.png](docs/screenshot-login.png).
 Əvvəlki `docs/screenshot.jpg` köhnə dizayna aiddir.
 
 ## Dizayn konsepti
@@ -169,13 +230,16 @@ Həftəlik göstərici serverin qaytardığı mövcud məlumatdan hesablanır; s
 - [Texniki qərarlar](docs/02-qerarlar.md)
 - [Sonra öyrəniləcək mövzular](docs/03-sonra-arasdirilacaq-movzular.md)
 - [Yeni feature və lüğət](docs/04-yeni-feature-elave-etme-ve-lugət.md)
+- [Dəyişiklik jurnalı](docs/05-deyisiklik-jurnali.md)
 - [Əvvəlki sifariş demosu](docs/archive/orders-demo/README.md) — əvvəlki kod və sənədlər ayrıca qorunub.
 
-Kodu belə oxuyun: Todo → AppDbContext → GetTodos → CreateTodo → TodoCreatedNotification → UpdateTodo / ToggleTodo / DeleteTodo → CleanupCompletedTodos → Program.cs → frontend/types → api → komponentlər → App.tsx.
+Giriş axını: User → PasswordService → JwtTokenService → Register → Login → Me → AuthenticationRegistration → Program.cs → frontend AuthContext.
+
+TODO axını: Todo → AppDbContext → GetTodos → CreateTodo → TodoCreatedNotification → UpdateTodo / ToggleTodo / DeleteTodo → CleanupCompletedTodos → Program.cs → frontend/types → api → komponentlər → App.tsx.
 
 ## Gələcək planlar
 
-- İstifadəçi girişi və hər istifadəçiyə ayrıca tapşırıqlar.
+- Refresh token, rollar, email təsdiqi və parolun bərpası.
 - Avtomatik unit və integration testlər.
 - Hangfire üçün dayanıqlı SQL storage və idempotent bildirişlər.
 - Mərkəzi xəta idarəsi, strukturlaşdırılmış loglar və baza-job əlaqəsinin etibarlılığı.
@@ -184,3 +248,5 @@ Kodu belə oxuyun: Todo → AppDbContext → GetTodos → CreateTodo → TodoCre
 ## Lisenziya
 
 [MIT](LICENSE).
+
+İstinadlar: [JWT Bearer konfiqurasiyası](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication?view=aspnetcore-8.0), [PBKDF2 API](https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes.pbkdf2?view=net-8.0).
