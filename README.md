@@ -60,7 +60,7 @@ docs/                   # Təlimatlar və əvvəlki demonun arxivi
 
 ## Necə işə salmaq
 
-**Tələblər:** .NET 8 SDK və runtime (daha yeni SDK da build edə bilər), Node.js 22.12+ və npm, yerli SQL Server. SQL Server Express də istifadə oluna bilər; ayrıca quraşdırılmış server lazımdır. Bu versiyada SQLite yoxdur.
+**Tələblər:** .NET 8 SDK və runtime (daha yeni SDK da build edə bilər), Node.js 22.13+ və npm, yerli SQL Server. SQL Server Express də istifadə oluna bilər; ayrıca quraşdırılmış server lazımdır. Bu versiyada SQLite yoxdur.
 
 ### Backend
 

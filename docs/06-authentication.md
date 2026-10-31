@@ -73,3 +73,5 @@ npm test
 ```
 
 Backend testləri real HTTP pipeline, JWT middleware və SQLite relational bazasından istifadə edir. Email test adapteri ilə əvəz olunur. SQL Server migration SQL-inin yaradılması ayrıca yoxlanıb; mövcud real bazada migration icrası və provayder üzərindən email çatdırılması deployment zamanı yoxlanmalıdır.
+
+Yekun yoxlama: backend 9/9, frontend 12/12 test, frontend lint və production build uğurludur. `npm audit --omit=dev` nəticəsi 0 zəiflikdir; tam audit-də ESLint-in development asılılıqlarından gələn 10 moderate minimatch xəbərdarlığı qalır. Production runtime-a yeni frontend dependency əlavə edilməyib.
