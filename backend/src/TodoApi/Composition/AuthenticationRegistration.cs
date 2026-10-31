@@ -43,6 +43,8 @@ public static class AuthenticationRegistration
         services.AddSingleton(resetSettings);
         services.AddSingleton(config.GetSection("Smtp").Get<SmtpSettings>() ?? new());
         services.AddScoped<IPasswordResetEmail, SmtpPasswordResetEmail>();
+        services.AddSingleton<PasswordResetDeliveryQueue>();
+        services.AddHostedService(provider => provider.GetRequiredService<PasswordResetDeliveryQueue>());
         services.AddRateLimiter(options =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
