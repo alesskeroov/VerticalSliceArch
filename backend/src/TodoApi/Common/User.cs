@@ -11,4 +11,10 @@ public class User
     [JsonIgnore]
     public string PasswordHash { get; set; } = "";
     public DateTime CreatedAt { get; set; }
+    [JsonIgnore]
+    public int SessionVersion { get; set; }
+    [JsonIgnore]
+    public string? ResetTokenHash { get; set; }
+    [JsonIgnore]
+    public DateTime? ResetTokenExpiresAt { get; set; }
 }

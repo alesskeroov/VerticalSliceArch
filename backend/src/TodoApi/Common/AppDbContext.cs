@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<User>().Property(user => user.Email).HasMaxLength(254).IsRequired();
         modelBuilder.Entity<User>().Property(user => user.DisplayName).HasMaxLength(100).IsRequired();
         modelBuilder.Entity<User>().Property(user => user.PasswordHash).HasMaxLength(512).IsRequired();
+        modelBuilder.Entity<User>().Property(user => user.ResetTokenHash).HasMaxLength(64);
         modelBuilder.Entity<Todo>().HasOne<User>().WithMany().HasForeignKey(todo => todo.UserId);
     }
 }

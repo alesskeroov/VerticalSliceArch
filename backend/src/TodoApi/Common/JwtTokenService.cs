@@ -18,7 +18,8 @@ public class JwtTokenService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim("name", user.DisplayName)
+            new Claim("name", user.DisplayName),
+            new Claim("session_version", user.SessionVersion.ToString(System.Globalization.CultureInfo.InvariantCulture))
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Secret));
         var token = new JwtSecurityToken(settings.Issuer, settings.Audience, claims,

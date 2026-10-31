@@ -21,18 +21,20 @@ public static class Login
             if (string.IsNullOrEmpty(email) || email.Length > 254 ||
                 !MailAddress.TryCreate(email, out var address) || address.Address != email)
                 return Results.BadRequest("Düzgün email ünvanı daxil edin.");
-            if (request.Password is null || request.Password.Length < 8)
-                return Results.BadRequest("Parol ən azı 8 simvol olmalıdır.");
+            if (request.Password is null || request.Password.Length < 8 || request.Password.Length > 128)
+                return Results.Json("Email və ya parol yanlışdır.", statusCode: 401);
             var user = await database.Users.AsNoTracking().SingleOrDefaultAsync(user => user.Email == email);
             // Hansı sahənin səhv olduğunu açıqlamırıq; hash heç bir cavabda yoxdur.
-            if (user is null || !passwords.Verify(request.Password, user.PasswordHash))
+            if (!passwords.Verify(request.Password, user?.PasswordHash ?? DummyHash) || user is null)
                 return Results.Json("Email və ya parol yanlışdır.", statusCode: 401);
             return Results.Ok(tokens.Create(user));
         }
     }
+    // Unknown accounts still pay the password hashing cost.
+    private static readonly string DummyHash = new PasswordService().Hash("dummy-account-password");
     public static void MapEndpoint(WebApplication app)
     {
         app.MapPost("/api/auth/login", (Request request, Handler handler) => handler.Handle(request))
-            .AllowAnonymous().WithTags("Giriş");
+            .AllowAnonymous().RequireRateLimiting("auth").WithTags("Giriş");
     }
 }

@@ -1,5 +1,8 @@
 using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -29,6 +32,33 @@ public static class AuthenticationRegistration
         services.AddScoped<Register.Handler>();
         services.AddScoped<Login.Handler>();
         services.AddScoped<Me.Handler>();
+        services.AddScoped<TodoApi.Features.Auth.ForgotPassword.ForgotPassword.Handler>();
+        services.AddScoped<TodoApi.Features.Auth.ResetPassword.ResetPassword.Handler>();
+        var resetSettings = config.GetSection("PasswordReset").Get<PasswordResetSettings>() ?? new();
+        if (!Uri.TryCreate(resetSettings.FrontendUrl, UriKind.Absolute, out var resetUri) ||
+            (resetUri.Scheme != "https" && !(resetUri.Scheme == "http" && resetUri.IsLoopback)) ||
+            !string.IsNullOrEmpty(resetUri.Fragment) || !string.IsNullOrEmpty(resetUri.Query) ||
+            resetSettings.ExpiryMinutes is < 5 or > 60)
+            throw new InvalidOperationException("PasswordReset: HTTPS frontend URL (local HTTP allowed), expiry 5–60 minutes required.");
+        services.AddSingleton(resetSettings);
+        services.AddSingleton(config.GetSection("Smtp").Get<SmtpSettings>() ?? new());
+        services.AddScoped<IPasswordResetEmail, SmtpPasswordResetEmail>();
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.OnRejected = async (context, cancellation) =>
+            {
+                context.HttpContext.Response.Headers.RetryAfter = "900";
+                await context.HttpContext.Response.WriteAsJsonAsync("Çox sayda cəhd edildi. Bir qədər sonra yenidən cəhd edin.", cancellation);
+            };
+            foreach (var (name, limit) in new[] { ("auth", 10), ("password-reset", 5) })
+                options.AddPolicy(name, context => RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = limit, Window = TimeSpan.FromMinutes(15),
+                        QueueLimit = 0, AutoReplenishment = true
+                    }));
+        });
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
         {
             // sub və name adlarını dəyişmədən saxlayırıq ki, tokenin quruluşu aydın qalsın.
@@ -44,11 +74,17 @@ public static class AuthenticationRegistration
             };
             options.Events = new JwtBearerEvents
             {
-                OnTokenValidated = context =>
+                OnTokenValidated = async context =>
                 {
-                    if (!Guid.TryParse(context.Principal?.FindFirstValue("sub"), out _))
+                    if (!Guid.TryParse(context.Principal?.FindFirstValue("sub"), out var id) ||
+                        !int.TryParse(context.Principal?.FindFirstValue("session_version"), out var version))
+                    {
                         context.Fail("İstifadəçi ID-si düzgün deyil.");
-                    return Task.CompletedTask;
+                        return;
+                    }
+                    var database = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+                    if (!await database.Users.AsNoTracking().AnyAsync(user => user.Id == id && user.SessionVersion == version))
+                        context.Fail("Sessiya etibarsızdır.");
                 }
             };
         });

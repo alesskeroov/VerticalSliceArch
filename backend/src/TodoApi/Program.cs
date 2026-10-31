@@ -32,7 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
 builder.Services.AddTodoFeatures();
 builder.Services.AddTodoAuthentication(builder.Configuration);
 builder.Services.AddHangfire(config => config.UseInMemoryStorage());
-builder.Services.AddHangfireServer();
+if (!builder.Environment.IsEnvironment("Testing")) builder.Services.AddHangfireServer();
 // Origin ayardan gəlir; yalnız frontend ünvanına icazə verilir.
 var frontendOrigin = builder.Configuration["FrontendOrigin"]
     ?? throw new InvalidOperationException("FrontendOrigin ayarı tapılmadı.");
@@ -45,12 +45,22 @@ builder.Services.AddSwaggerGen(options => options.CustomSchemaIds(
 var app = builder.Build();
 // Code First migration-ları ilk açılışda bazanı və cədvəlləri yaradır.
 // Demo üçün avtomatikdir; real yayımlamada ayrıca yerləşdirmə addımı seçilə bilər.
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await database.Database.MigrateAsync();
 }
 app.UseCors();
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    if (context.Request.Path.StartsWithSegments("/api/auth"))
+        context.Response.Headers.CacheControl = "no-store";
+    await next();
+});
+app.UseRateLimiter();
 // Əvvəl kimlik yoxlanır, sonra həmin kimliyin giriş icazəsi qiymətləndirilir.
 app.UseAuthentication();
 app.UseAuthorization();
@@ -63,6 +73,9 @@ if (app.Environment.IsDevelopment())
 Register.MapEndpoint(app);
 Login.MapEndpoint(app);
 Me.MapEndpoint(app);
+TodoApi.Features.Auth.ForgotPassword.ForgotPassword.MapEndpoint(app);
+TodoApi.Features.Auth.ResetPassword.ResetPassword.MapEndpoint(app);
+TodoApi.Features.Auth.Logout.Logout.MapEndpoint(app);
 GetTodos.MapEndpoint(app);
 CreateTodo.MapEndpoint(app);
 UpdateTodo.MapEndpoint(app);
@@ -71,7 +84,9 @@ DeleteTodo.MapEndpoint(app);
 TodoCreatedNotification.MapEndpoint(app);
 CleanupCompletedTodos.MapEndpoint(app);
 // Eyni ID-li plan yenilənir; hər açılışda dublikat plan yaranmır.
-app.Services.GetRequiredService<IRecurringJobManager>()
+if (!app.Environment.IsEnvironment("Testing")) app.Services.GetRequiredService<IRecurringJobManager>()
     .AddOrUpdate<CleanupCompletedTodos.Handler>("cleanup-completed-todos",
         handler => handler.Handle(), Cron.Hourly());
 app.Run();
+
+public partial class Program { }

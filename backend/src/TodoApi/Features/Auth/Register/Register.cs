@@ -7,7 +7,7 @@ namespace TodoApi.Features.Auth.Register;
 
 public static class Register
 {
-    public record Request(string? Email, string? Password, string? DisplayName);
+    public record Request(string? Email, string? Password, string? DisplayName, string? ConfirmPassword);
     public class Handler
     {
         private readonly AppDbContext database;
@@ -22,8 +22,10 @@ public static class Register
             if (string.IsNullOrEmpty(email) || email.Length > 254 ||
                 !MailAddress.TryCreate(email, out var address) || address.Address != email)
                 return Results.BadRequest("Düzgün email ünvanı daxil edin.");
-            if (request.Password is null || request.Password.Length < 8)
-                return Results.BadRequest("Parol ən azı 8 simvol olmalıdır.");
+            if (request.Password is null || request.Password.Length < 8 || request.Password.Length > 128)
+                return Results.BadRequest("Parol 8–128 simvol olmalıdır.");
+            if (request.Password != request.ConfirmPassword)
+                return Results.BadRequest("Parollar uyğun gəlmir.");
             if (string.IsNullOrWhiteSpace(request.DisplayName) || request.DisplayName.Trim().Length > 100)
                 return Results.BadRequest("Ad boş ola bilməz və 100 simvoldan uzun olmamalıdır.");
             if (await database.Users.AnyAsync(user => user.Email == email))
@@ -45,6 +47,6 @@ public static class Register
     public static void MapEndpoint(WebApplication app)
     {
         app.MapPost("/api/auth/register", (Request request, Handler handler) => handler.Handle(request))
-            .AllowAnonymous().WithTags("Giriş");
+            .AllowAnonymous().RequireRateLimiting("auth").WithTags("Giriş");
     }
 }
