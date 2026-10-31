@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { PlusIcon } from './icons';
+import { Plus, CornerDownLeft } from 'lucide-react';
+import { Button } from './ui/button';
 
 type Props = { busy: boolean; onAdd: (title: string) => Promise<boolean> };
 
@@ -14,10 +15,11 @@ export default function TodoForm({ busy, onAdd }: Props) {
   return (
     <form className="todo-form" onSubmit={submit}>
       <label className="visually-hidden" htmlFor="new-todo">Yeni tapşırıq əlavə et</label>
-      <button className="icon-button add-button" disabled={busy || !title.trim()}
-        type="submit" aria-label="Tapşırıq əlavə et"><PlusIcon /></button>
+      <span className="add-glyph" aria-hidden="true"><Plus size={20} /></span>
       <input id="new-todo" value={title} onChange={e => setTitle(e.target.value)}
         placeholder="Yeni tapşırıq əlavə et" maxLength={200} required disabled={busy} autoComplete="off" />
+      <Button className="add-button" variant="ghost" size="icon" disabled={busy || !title.trim()}
+        type="submit" aria-label="Tapşırıq əlavə et"><CornerDownLeft size={18} aria-hidden="true" /></Button>
     </form>
   );
 }

@@ -1,27 +1,47 @@
-/* Yalnız yeni giriş ekranları və hesab idarələri; mövcud Matchday stilləri dəyişmir. */
-.auth-page { min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; max-width: 30rem; margin: 0 auto; padding: var(--space-6) var(--space-5); }
-.auth-brand { margin-bottom: var(--space-6); }
-.auth-card { padding: var(--space-6); background: var(--surface); border-radius: var(--radius-card); }
-.auth-card h2 { font-size: var(--title-2); margin: 0 0 var(--space-2); }
-.auth-description { color: var(--text-secondary); font-size: var(--subheadline); margin: 0 0 var(--space-6); }
-.auth-form { display: flex; flex-direction: column; gap: var(--space-2); }
-.auth-form label { font-size: var(--subheadline); font-weight: 600; }
-.auth-form > input, .password-field { margin-bottom: var(--space-3); }
-.auth-form input { width: 100%; min-width: 0; min-height: var(--touch-target); padding: var(--space-3); border: 1px solid var(--separator); border-radius: var(--radius-control); background: var(--fill); }
-.password-field { display: flex; align-items: center; gap: var(--space-1); }
-.password-field input { flex: 1; }
-.password-field button { padding: var(--space-2); font-size: var(--footnote); }
-.auth-submit { background: var(--pitch); color: var(--bg); border-radius: var(--radius-control); padding: var(--space-3); font-weight: 600; margin-top: var(--space-2); }
-.auth-switch { display: flex; align-items: center; flex-wrap: wrap; margin: var(--space-4) 0 0; font-size: var(--subheadline); }
-.auth-switch button { padding: var(--space-2); }
-.auth-error { padding: var(--space-3); border-radius: var(--radius-control); background: var(--danger-background); color: var(--danger-text); font-size: var(--subheadline); margin: 0; }
-.auth-hint { color: var(--text-secondary); font-size: var(--footnote); }
-.auth-navigation { display: flex; flex-direction: column; align-items: flex-end; min-width: 0; }
-.auth-navigation .compact-score { display: none; }
-.is-scrolled .auth-navigation .compact-score { display: block; }
-.account-controls { display: flex; align-items: center; gap: var(--space-1); min-width: 0; }
-.account-controls button { padding: var(--space-2); font-size: var(--footnote); }
-.account-name { max-width: 6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); font-size: var(--footnote); }
-@media (max-width: 400px) { .auth-page { padding-inline: var(--space-4); } .auth-card { padding: var(--space-5); } .account-name { max-width: 5rem; } }
-
-.auth-success { padding: var(--space-3); border-radius: var(--radius-control); background: var(--fill); color: var(--label); font-size: var(--subheadline); overflow-wrap: anywhere; }
+.auth-page { min-height: 100dvh; display: grid; place-items: center; padding: 72px 24px 48px; position: relative; }
+.auth-theme { position: absolute; top: 18px; right: 24px; }
+.auth-composition { width: 100%; max-width: 440px; }
+.auth-brand { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 28px; }
+.auth-brand .brand-word { font-size: 38px; }
+.auth-brand .brand-mark { width: 40px; height: 40px; border-radius: 12px; }
+.brand-tagline { font-size: .8125rem; color: var(--text-secondary); }
+.auth-card { padding: 32px; border: 1px solid var(--separator); border-radius: var(--radius-card); background: var(--surface); box-shadow: var(--card-shadow); }
+.auth-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: .5625rem; font-weight: 600; letter-spacing: .14em; margin-bottom: 18px; }
+.auth-card h2 { display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 1.625rem; font-weight: 600; letter-spacing: -.04em; line-height: 1.25; margin: 0; }
+.auth-card h2:focus { outline: none; }
+.auth-card h2 svg { color: var(--pitch); }
+.auth-description { font-size: .8125rem; line-height: 1.65; color: var(--text-secondary); margin: 12px 0 28px; }
+.auth-form { display: grid; gap: 20px; }
+.form-field { min-width: 0; }
+.field-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.field-label label { font-size: .8125rem; font-weight: 500; }
+.text-link { background: transparent; color: var(--pitch); border: 0; padding: 0; font-size: inherit; font-weight: 500; min-height: 44px; display: inline-flex; align-items: center; border-radius: 4px; text-decoration: none; }
+.text-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.forgot-link { font-size: .6875rem; min-height: 24px; padding-block: 2px; }
+.input-wrapper { position: relative; height: var(--input-height); }
+.input-wrapper .with-icon { padding-left: 44px; }
+.input-wrapper .with-action { padding-right: 48px; }
+.input-icon { position: absolute; left: 15px; top: 15px; color: var(--text-secondary); pointer-events: none; }
+.password-toggle { position: absolute; right: 2px; top: 2px; border-radius: 9px; }
+.password-toggle:hover:not(:disabled), .password-toggle:active:not(:disabled) { transform: none; }
+.is-invalid .ui-input { border-color: var(--danger-text); }
+.field-error { font-size: .75rem; color: var(--danger-text); margin-top: 6px; }
+.field-hint { font-size: .75rem; color: var(--text-secondary); margin-top: 6px; }
+.auth-submit { width: 100%; height: 48px; margin-top: 4px; justify-content: space-between; padding-inline: 18px; font-size: .8125rem; font-weight: 600; }
+.auth-error, .auth-success { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid transparent; border-radius: 10px; font-size: .8125rem; line-height: 1.5; overflow-wrap: anywhere; }
+.auth-error { background: var(--danger-background); color: var(--danger-text); }
+.auth-success { background: var(--success-background); color: var(--label); }
+.auth-error > svg, .auth-success > svg { margin-top: 1px; }
+.auth-success > svg { color: var(--pitch); }
+.auth-footer { border-top: 1px solid var(--separator); padding-top: 16px; margin-top: 24px; text-align: center; font-size: .75rem; color: var(--text-secondary); }
+.auth-footer .text-link { margin-left: 4px; }
+.back-link { gap: 8px; margin: 0 auto; }
+.auth-assurance { display: flex; justify-content: center; align-items: center; gap: 7px; margin-top: 20px; color: var(--text-secondary); font-size: .6875rem; }
+.connection-retry { margin-top: 20px; width: 100%; }
+@media (max-width: 480px) {
+  .auth-page { padding: 64px 16px 32px; }
+  .auth-card { padding: 24px; }
+  .auth-card h2 { font-size: 1.5rem; }
+  .auth-brand { margin-bottom: 24px; }
+  .auth-theme { right: 16px; top: 12px; }
+}

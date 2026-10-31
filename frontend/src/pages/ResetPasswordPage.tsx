@@ -3,6 +3,12 @@ import type { FormEvent } from 'react';
 import { resetPassword } from '../api/authApi';
 import { clearSession } from '../auth/tokenStorage';
 import type { ResetLink } from '../auth/resetLink';
+import { ArrowLeft } from 'lucide-react';
+import AuthShell from '../components/AuthShell';
+import FormField from '../components/FormField';
+import FormMessage from '../components/FormMessage';
+import SubmitButton from '../components/SubmitButton';
+import { validateFields } from '../lib/validation';
 
 export default function ResetPasswordPage({ link, onLogin }: { link: ResetLink; onLogin: () => void }) {
   const [password, setPassword] = useState('');
@@ -10,33 +16,31 @@ export default function ResetPasswordPage({ link, onLogin }: { link: ResetLink; 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [fields, setFields] = useState<Record<string, string>>({});
+  const [errorCount, setErrorCount] = useState(0);
   async function submit(event: FormEvent) {
-    event.preventDefault(); setError('');
-    if (password !== confirmPassword) { setError('Parollar uyğun gəlmir.'); return; }
+    event.preventDefault(); if (busy) return; setError('');
+    const invalid = validateFields(event.currentTarget as HTMLFormElement);
+    if (password !== confirmPassword) invalid['reset-confirm'] = 'Parollar uyğun gəlmir.';
+    setFields(invalid);
+    if (Object.keys(invalid).length) { setError(password !== confirmPassword ? 'Parollar uyğun gəlmir.' : 'İşarələnmiş sahələri yoxlayın.'); setErrorCount(count => count + 1); return; }
     setBusy(true);
     try { await resetPassword(link.email, link.token, password, confirmPassword); clearSession(); setSuccess(true); }
-    catch (err) { setError(err instanceof Error ? err.message : 'Şifrə yenilənmədi.'); }
+    catch (err) { setError(err instanceof Error ? err.message : 'Şifrə yenilənmədi.'); setErrorCount(count => count + 1); }
     finally { setBusy(false); }
   }
   const validLink = Boolean(link.email && link.token);
-  return <main className="auth-page">
-    <header className="auth-brand"><h1>MATCHDAY</h1></header>
-    <section className="auth-card" aria-labelledby="reset-title">
-      <h2 id="reset-title">Yeni şifrə təyin et</h2>
-      {success ? <p className="auth-success" role="status">Şifrən yeniləndi. Yeni şifrə ilə daxil ola bilərsən.</p> : !validLink ?
-        <p className="auth-error" role="alert">Sıfırlama linki etibarsızdır. Giriş səhifəsindən yeni link istə.</p> : <>
-        <p className="auth-description">Ən azı 8 simvoldan ibarət yeni şifrə seç. Link yalnız bir dəfə istifadə edilə bilər.</p>
-        <form className="auth-form" onSubmit={submit}>
-          <label htmlFor="reset-password">Yeni parol</label>
-          <input id="reset-password" type="password" autoComplete="new-password" required minLength={8} maxLength={128}
-            value={password} onChange={e => setPassword(e.target.value)} disabled={busy} />
-          <label htmlFor="reset-confirm">Parolun təkrarı</label>
-          <input id="reset-confirm" type="password" autoComplete="new-password" required minLength={8} maxLength={128}
-            value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={busy} />
-          {error && <p className="auth-error" role="alert">{error}</p>}
-          <button className="auth-submit" type="submit" disabled={busy}>{busy ? 'Yenilənir…' : 'Şifrəni yenilə'}</button>
-        </form></>}
-      <p className="auth-switch"><button type="button" disabled={busy} onClick={onLogin}>Girişə qayıt</button></p>
-    </section>
-  </main>;
+  return <AuthShell title="Yeni şifrə təyin et" titleId="reset-title" description="Yeni başlanğıc üçün təhlükəsiz bir şifrə seç. Link yalnız bir dəfə istifadə edilə bilər." errorCount={errorCount}
+    footer={<button className="text-link back-link" type="button" disabled={busy} onClick={onLogin}><ArrowLeft size={16} aria-hidden="true" />Girişə qayıt</button>}>
+    {success ? <FormMessage success>Şifrən yeniləndi. Yeni şifrə ilə daxil ola bilərsən.</FormMessage> : !validLink ?
+      <FormMessage>Sıfırlama linki etibarsızdır. Giriş səhifəsindən yeni link istə.</FormMessage> :
+      <form className="auth-form" onSubmit={submit} noValidate aria-busy={busy}>
+        <FormField id="reset-password" label="Yeni parol" password autoComplete="new-password" placeholder="Ən azı 8 simvol" required minLength={8} maxLength={128}
+          value={password} onChange={e => setPassword(e.target.value)} disabled={busy} error={fields['reset-password']} />
+        <FormField id="reset-confirm" label="Parolun təkrarı" password autoComplete="new-password" placeholder="Yeni parolu təkrar et" required minLength={8} maxLength={128}
+          value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={busy} error={fields['reset-confirm']} />
+        {error && <FormMessage>{error}</FormMessage>}
+        <SubmitButton busy={busy} label="Şifrəni yenilə" busyLabel="Yenilənir…" />
+      </form>}
+  </AuthShell>;
 }
