@@ -1,16 +1,25 @@
 # TASK-UI-001: Matchday frontend dizaynının yenilənməsi
 
 - **Status:** İcrada
-- **Mərhələ:** Diaqnostika tamamlanıb; yeni promptun şərtli icazəsi ilə Jane implementasiyaya başlayıb
-- **Tarix:** 2026-10-31
+- **Mərhələ:** Mövcud dəyişikliklər əsas qovluqda saxlanılıb; yeni branch GitHub-a push üçün hazırlanır
+- **Tarix:** 2026-11-01
 - **Məsul agentlər:** Soprano (Team Lead), Jane (Frontend), Watson (Docs)
-- **Branch-lər:** `feature/TASK-UI-001-frontend-redesign`, `feature/TASK-UI-001-lead-review`, `docs/TASK-UI-001-frontend-redesign`
+- **Cari ortaq branch:** `feature/TASK-UI-001-publish-changes`
+- **Əvvəlki branch-lər:** `feature/TASK-UI-001-frontend-redesign`, `feature/TASK-UI-001-lead-review`, `docs/TASK-UI-001-frontend-redesign`
 - **Branch bazası:** `origin/main` — `4608d6e`; lokal `main` branch-i mövcud deyil
 - **Audit baseline-ı:** `feature/TASK-AUTH-lead-review` — `0ceb86b`
-- **PR-lər:** Açılmayıb; istifadəçinin bu mərhələ üçün no-push tələbi saxlanır, final review hələ tamamlanmayıb
+- **PR-lər:** Hələ açılmayıb; 2026-11-01 tarixli göstəriş GitHub-a push etməyə icazə verir
 - **Sənədləşdirən:** Watson
 
 ## Təsvir və son istiqamət
+
+### 2026-11-01: Əsas qovluq və GitHub-a push hazırlığı
+
+İstifadəçi worktree-dəki dəyişikliklərin əsas layihə qovluğuna gətirilməsini, yeni branch yaradılmasını və GitHub-a push edilməsini istəyib. Əvvəlki no-push məhdudiyyəti bu göstərişlə dəyişib. Soprano-nun yoxlamasına görə `git worktree list` yalnız əsas `C:/Users/elesg/OneDrive/Desktop/VerticalSliceArch` qovluğunu göstərir; dəyişikliklər artıq həmin qovluqda və commit tarixçəsindədir. Başlanğıc iş ağacı təmizdir. `git fetch origin` uğurludur; mövcud tarixçə `origin/main`-dən 15 commit irəlidə, 0 commit geridədir. Soprano dəyişiklikləri qoruyan `feature/TASK-UI-001-publish-changes` branch-ini yaradıb. Bu qeyd yazılarkən push hələ təsdiqlənməyib.
+
+Yeni kod yazılmır. İstifadəçinin “hər şeyi test etmə ehtiyac yoxdu” göstərişi ilə build, lint, test və browser yoxlamaları işə salınmır; uğurlu nəticə kimi təqdim edilmir. Bu qeyddə `main`-ə merge edildiyi və ya PR təsdiqləndiyi iddia olunmur.
+
+PR açılmayıb və `main`-ə merge edilməyib. Soprano GitHub CLI-nin (`gh`) quraşdırılmadığını və PR yaratmaq üçün uyğun connector-un olmadığını bildirib; push-dan sonra GitHub müqayisə/PR yaratma keçidi təqdim olunacaq.
 
 İstifadəçi mövcud görünüşün keyfiyyətini yüksəltmək istəyir, amma Matchday-in futbol konsepti **saxlanmalıdır**: tünd yaşıl palitra, scoreboard, tapşırıq oyunu, qol sayı və qısa tamamlama effekti. Əvvəlki slate/mavi workspace təklifi qəbul edilməyib və [0002 futbol dizayn sistemi təklifi](../decisions/0002-matchday-football-design-system.md) ilə əvəz olunur. Əvvəlki mərhələdə yalnız audit/plan icazəsi var idi. Son diaqnostika/düzəliş promptu kod yoxdursa implementasiya etməyə açıq icazə verir. Soprano mənbə kodunun yazılmadığını təsdiqlədiyi üçün Jane tətbiqə başlayıb; əlavə təsdiq gözlənilmir.
 

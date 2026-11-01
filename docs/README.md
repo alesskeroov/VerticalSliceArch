@@ -1,13 +1,13 @@
 # Layihə sənədləri
 
-- **Son yenilənmə:** 2026-10-31
+- **Son yenilənmə:** 2026-11-01
 - **Məsul:** Watson (Docs)
 
 ## Aktiv tapşırıqlar
 
 | Tapşırıq | Status | Mərhələ |
 |---|---|---|
-| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Real implementasiya davam edir; son “test etmə” göstərişinə görə yekun test/verifikasiya aparılmır |
+| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Dəyişikliklər əsas qovluqdadır; `feature/TASK-UI-001-publish-changes` branch-i GitHub-a push üçün hazırlanır; istifadəçinin göstərişi ilə yoxlamalar aparılmır |
 
 ## Qərarlar və araşdırmalar
 
@@ -24,7 +24,7 @@
 3. [Araşdırılacaq mövzular](03-sonra-arasdirilacaq-movzular.md)
 4. [Yeni feature və lüğət](04-yeni-feature-elave-etme-ve-lugət.md)
 5. [Dəyişiklik jurnalı](05-deyisiklik-jurnali.md)
-6. `06-authentication.md` — Authentication quraşdırma və yoxlama təlimatı — `feature/TASK-AUTH-lead-review` branch-ində mövcuddur, docs branch-inin `origin/main` bazasında hələ yoxdur; auth inteqrasiyası redesign tətbiqinin asılılığıdır.
+6. [Authentication quraşdırma və yoxlama təlimatı](06-authentication.md) — cari ortaq branch-də mövcuddur.
 
 Köhnə təlimatların bəzi auth/test qeydləri cari auth review branch-i ilə fərqlənir. Dəqiq aşkar edilmiş fərqlər [TASK-UI-001 qeydlərində](tasks/TASK-UI-001-frontend-redesign.md#asılılıqlar-və-sənəd-uyğunsuzluqları) saxlanır. Tarixi qərarlar bu auditdə yenidən yazılmayıb.
 
