@@ -1,7 +1,7 @@
 # TASK-UI-001: Matchday frontend dizaynının yenilənməsi
 
 - **Status:** İcrada
-- **Mərhələ:** Mövcud dəyişikliklər əsas qovluqda saxlanılıb; yeni branch GitHub-a push üçün hazırlanır
+- **Mərhələ:** Əvvəlki dəyişikliklər push edilib; yeni giriş screenshotu və kök README yenilənməsi hazırlanır
 - **Tarix:** 2026-11-01
 - **Məsul agentlər:** Soprano (Team Lead), Jane (Frontend), Watson (Docs)
 - **Cari ortaq branch:** `feature/TASK-UI-001-publish-changes`
@@ -12,6 +12,12 @@
 - **Sənədləşdirən:** Watson
 
 ## Təsvir və son istiqamət
+
+### 2026-11-01: GitHub README üçün yeni giriş screenshotu
+
+İstifadəçi GitHub README-nin screenshot bölməsinin yeni giriş ekranı ilə yenilənməsini istəyib. İş eyni `feature/TASK-UI-001-publish-changes` branch-ində davam edir. Soprano əvvəlki `c3e3ca1` commitinin GitHub-a uğurla push edildiyini və remote ilə eyni olduğunu təsdiqləyib. Bu yeni screenshot/README dəyişikliklərinin push-u isə hələ gözlənilir.
+
+Soprano yeni giriş ekranının şəklini `docs/screenshot-login-current.jpg` kimi saxlayacaq və kök `README.md` screenshot bölməsini yeniləyəcək. Watson yalnız bu tapşırıq qeydini və sənəd indeksini yeniləyir. Screenshot çəkmək istifadəçinin istədiyi artefaktın hazırlanmasıdır; build, lint və test işə salınmır və nəticələri barədə uğur iddiası yoxdur. Yeni PR və ya `main`-ə merge edildiyi bildirilmir.
 
 ### 2026-11-01: Əsas qovluq və GitHub-a push hazırlığı
 

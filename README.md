@@ -202,15 +202,11 @@ CI build, frontend lint/test və SQLite üzərində backend HTTP inteqrasiya tes
 
 ## Ekran görüntüsü
 
-| Light | Dark |
-| --- | --- |
-| ![Light görünüş](docs/screenshot-light.png) | ![Dark görünüş](docs/screenshot-dark.png) |
+### Yeni giriş ekranı
 
-Yeni ekran görüntüsü çəkərkən eyni görünüşü light və dark sistem rejimlərində saxlayın:
-`docs/screenshot-light.png` və `docs/screenshot-dark.png`.
-Hər rejimdə 375px mobil və 1280px desktop görünüşünü yoxlamaq tövsiyə olunur.
-Giriş ekranı: [screenshot-login.png](docs/screenshot-login.png).
-Əvvəlki `docs/screenshot.jpg` köhnə dizayna aiddir.
+Matchday-in yenilənmiş giriş ekranı: futbol meydanı fonu, email və parol sahələri, parolu göstərmə düyməsi və şifrə bərpası keçidi.
+
+![Matchday — yenilənmiş giriş ekranı](docs/screenshot-login-current.jpg)
 
 ## Dizayn konsepti
 

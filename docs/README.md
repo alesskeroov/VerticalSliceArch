@@ -7,7 +7,7 @@
 
 | Tapşırıq | Status | Mərhələ |
 |---|---|---|
-| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Dəyişikliklər əsas qovluqdadır; `feature/TASK-UI-001-publish-changes` branch-i GitHub-a push üçün hazırlanır; istifadəçinin göstərişi ilə yoxlamalar aparılmır |
+| [TASK-UI-001 — Frontend redesign](tasks/TASK-UI-001-frontend-redesign.md) | İcrada | Əvvəlki dəyişikliklər GitHub-a push edilib; yeni giriş ekranının screenshotu və kök README bölməsi yenilənir; yeni push gözlənilir |
 
 ## Qərarlar və araşdırmalar
 
@@ -29,6 +29,8 @@
 Köhnə təlimatların bəzi auth/test qeydləri cari auth review branch-i ilə fərqlənir. Dəqiq aşkar edilmiş fərqlər [TASK-UI-001 qeydlərində](tasks/TASK-UI-001-frontend-redesign.md#asılılıqlar-və-sənəd-uyğunsuzluqları) saxlanır. Tarixi qərarlar bu auditdə yenidən yazılmayıb.
 
 ## Vizual qeydlər və arxiv
+
+- Yeni giriş ekranı üçün nəzərdə tutulan artefakt: `screenshot-login-current.jpg`; kök README-nin screenshot bölməsi bu görünüşlə yenilənir. Screenshot istifadəçinin tələb etdiyi artefaktdır; build/lint/test yoxlaması deyil.
 
 - Mövcud screenshot-lar: `screenshot-light.png`, `screenshot-dark.png`, `screenshot-light-mobile.png`, `screenshot-dark-mobile.png`, `screenshot-login.png`, `screenshot.jpg`. Bunlar tarixi görünüşlərdir, cari runtime yoxlamasının əvəzi deyil.
 - [Əvvəlki sifariş demosu](archive/orders-demo/README.md)
